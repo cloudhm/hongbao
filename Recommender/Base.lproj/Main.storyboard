@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -108,6 +109,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="ymu-k2-G91">
+                        <barButtonItem key="leftBarButtonItem" systemItem="search" id="n6W-96-rvz">
+                            <connections>
+                                <segue destination="DYS-N7-uJE" kind="show" id="YPj-P7-cgd"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="bookmarks" id="pLt-8H-ojg">
                             <connections>
                                 <segue destination="AdM-8Y-Vu8" kind="show" id="fu3-IW-dTw"/>
@@ -204,6 +210,52 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8aH-Iv-h2F" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1973.5999999999999" y="-544.67766116941539"/>
+        </scene>
+        <!--Search View Controller-->
+        <scene sceneID="XVI-Ti-1JH">
+            <objects>
+                <viewController hidesBottomBarWhenPushed="YES" id="DYS-N7-uJE" customClass="SearchViewController" customModule="Recommender" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="G5g-O2-wYC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="rG7-jB-qGL">
+                                <rect key="frame" x="0.0" y="64" width="375" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="DYS-N7-uJE" id="4dI-jX-nsa"/>
+                                </connections>
+                            </searchBar>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wcb-oj-nBg">
+                                <rect key="frame" x="0.0" y="120" width="375" height="547"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="DYS-N7-uJE" id="Klc-UX-ZJY"/>
+                                    <outlet property="delegate" destination="DYS-N7-uJE" id="fz1-03-ghx"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="eTp-en-8BU" firstAttribute="trailing" secondItem="wcb-oj-nBg" secondAttribute="trailing" id="1az-ur-FAG"/>
+                            <constraint firstItem="wcb-oj-nBg" firstAttribute="top" secondItem="rG7-jB-qGL" secondAttribute="bottom" id="EYb-Xz-LLZ"/>
+                            <constraint firstItem="eTp-en-8BU" firstAttribute="bottom" secondItem="wcb-oj-nBg" secondAttribute="bottom" id="LPX-9a-wtq"/>
+                            <constraint firstItem="rG7-jB-qGL" firstAttribute="leading" secondItem="eTp-en-8BU" secondAttribute="leading" id="MEd-4g-dj2"/>
+                            <constraint firstItem="rG7-jB-qGL" firstAttribute="top" secondItem="eTp-en-8BU" secondAttribute="top" id="Ps9-Wl-Wws"/>
+                            <constraint firstItem="rG7-jB-qGL" firstAttribute="trailing" secondItem="eTp-en-8BU" secondAttribute="trailing" id="Q2b-kf-hi3"/>
+                            <constraint firstItem="wcb-oj-nBg" firstAttribute="leading" secondItem="eTp-en-8BU" secondAttribute="leading" id="nvk-z1-4N0"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="eTp-en-8BU"/>
+                    </view>
+                    <connections>
+                        <outlet property="searchBar" destination="rG7-jB-qGL" id="Ksp-77-hGZ"/>
+                        <outlet property="tableView" destination="wcb-oj-nBg" id="LOm-qZ-DxB"/>
+                        <segue destination="AdM-8Y-Vu8" kind="show" identifier="searchToCart" id="Bxp-vt-M4E"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tuT-ok-wTC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1737" y="-1335"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="3QH-6j-ikF">
@@ -349,4 +401,7 @@
             <point key="canvasLocation" x="-763" y="-118"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Bxp-vt-M4E"/>
+    </inferredMetricsTieBreakers>
 </document>

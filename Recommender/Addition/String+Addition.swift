@@ -24,4 +24,19 @@ extension String {
         }
         return Int64(lastComponent)
     }
+    
+    func getIntNumber() -> String? {
+        let string = NSString(string: self)
+        let range = string.range(of: "[0-9]+", options: .regularExpression)
+        if range.location == NSNotFound || range.length == 0 {
+            return nil
+        }
+        return string.substring(with: range)
+    }
+    func encodingProductID()->String?{
+        return ("gid://shopify/Product/"+self).data(using: .utf8)?.base64EncodedString()
+    }
+    func encodingProductVariantID()->String?{
+        return ("gid://shopify/ProductVariant/"+self).data(using: .utf8)?.base64EncodedString()
+    }
 }

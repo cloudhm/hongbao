@@ -8,8 +8,8 @@
 
 import Foundation
 import MobileBuySDK
-extension Storefront.ProductEdge : Equatable {
-    public static func ==(lhs: Storefront.ProductEdge, rhs: Storefront.ProductEdge) -> Bool {
-        return lhs.node.id.rawValue == rhs.node.id.rawValue
+extension Storefront.Product : Equatable {
+    public static func ==(lhs: Storefront.Product, rhs: Storefront.Product) -> Bool {
+        return lhs.id.rawValue == rhs.id.rawValue
     }
 }

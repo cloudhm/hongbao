@@ -16,7 +16,7 @@ class RecommenderViewController: UITableViewController {
     var recommenderProducts : [RecommenderProduct] = []
     var dataRequest : DataRequest? {
         didSet{
-            dataRequest?.cancel()
+            oldValue?.cancel()
         }
     }
     var loading : Bool = false
@@ -84,6 +84,7 @@ class RecommenderViewController: UITableViewController {
                 return
             }
             self?.last = last
+            self?.currentPage = page
             if refresh {
                 self?.recommenderProducts = recommenderProducts
             } else {

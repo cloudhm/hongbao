@@ -13,12 +13,12 @@ import RxCocoa
 class CartController{
     // MARK: declare variables
     static let shared : CartController = CartController()
-    var productEdgesVariable : Variable<[Storefront.ProductEdge]> = Variable([])
-    func addToCart(_ productEdge : Storefront.ProductEdge?) {
-        guard let productEdge = productEdge else { return }
-        let flag = productEdgesVariable.value.contains(productEdge)
+    var productsVariable : Variable<[Storefront.Product]> = Variable([])
+    func addToCart(_ product : Storefront.Product?) {
+        guard let product = product else { return }
+        let flag = productsVariable.value.contains(product)
         if !flag {
-            productEdgesVariable.value.append(productEdge)
+            productsVariable.value.append(product)
         }
     }
 }

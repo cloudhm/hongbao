@@ -16,6 +16,7 @@
 		6192B391204FBF0D009BC242 /* RecommenderProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B390204FBF0D009BC242 /* RecommenderProduct.swift */; };
 		6192B394204FC826009BC242 /* RecommenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B393204FC826009BC242 /* RecommenderViewController.swift */; };
 		6192B397204FC9F1009BC242 /* RecommenderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B396204FC9F1009BC242 /* RecommenderCell.swift */; };
+		6192B39A204FFE45009BC242 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B399204FFE45009BC242 /* SearchViewController.swift */; };
 		61C5B211204C1FCB00B27DA4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B210204C1FCB00B27DA4 /* AppDelegate.swift */; };
 		61C5B216204C1FCB00B27DA4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61C5B214204C1FCB00B27DA4 /* Main.storyboard */; };
 		61C5B218204C1FCB00B27DA4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61C5B217204C1FCB00B27DA4 /* Assets.xcassets */; };
@@ -27,6 +28,8 @@
 		61C5B22F204C353D00B27DA4 /* Int64+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B22E204C353D00B27DA4 /* Int64+Addition.swift */; };
 		61C5B231204C354F00B27DA4 /* String+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B230204C354F00B27DA4 /* String+Addition.swift */; };
 		61C5B233204C37CB00B27DA4 /* Decimal+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B232204C37CB00B27DA4 /* Decimal+Addition.swift */; };
+		61F5896A2050142E00A81BD8 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F589682050142E00A81BD8 /* SearchCell.swift */; };
+		61F5896B2050142E00A81BD8 /* SearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61F589692050142E00A81BD8 /* SearchCell.xib */; };
 		CF9836A01B995BD0A4E75F1B /* Pods_Recommender.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED96738C56D93E6D7164FF /* Pods_Recommender.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +44,7 @@
 		6192B390204FBF0D009BC242 /* RecommenderProduct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommenderProduct.swift; sourceTree = "<group>"; };
 		6192B393204FC826009BC242 /* RecommenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommenderViewController.swift; sourceTree = "<group>"; };
 		6192B396204FC9F1009BC242 /* RecommenderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommenderCell.swift; sourceTree = "<group>"; };
+		6192B399204FFE45009BC242 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		61C5B20D204C1FCB00B27DA4 /* Recommender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recommender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61C5B210204C1FCB00B27DA4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		61C5B215204C1FCB00B27DA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -54,6 +58,8 @@
 		61C5B22E204C353D00B27DA4 /* Int64+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int64+Addition.swift"; sourceTree = "<group>"; };
 		61C5B230204C354F00B27DA4 /* String+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Addition.swift"; sourceTree = "<group>"; };
 		61C5B232204C37CB00B27DA4 /* Decimal+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Addition.swift"; sourceTree = "<group>"; };
+		61F589682050142E00A81BD8 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		61F589692050142E00A81BD8 /* SearchCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchCell.xib; sourceTree = "<group>"; };
 		9A3F6532BA1CA6436B7B1473 /* Pods-Recommender.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Recommender.release.xcconfig"; path = "Pods/Target Support Files/Pods-Recommender/Pods-Recommender.release.xcconfig"; sourceTree = "<group>"; };
 		CCC20AE1753F0A7AB702C034 /* Pods-Recommender.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Recommender.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Recommender/Pods-Recommender.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,6 +126,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		6192B398204FFE2E009BC242 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				61F58965205013E800A81BD8 /* View */,
+				6192B399204FFE45009BC242 /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
 		61C5B204204C1FCB00B27DA4 = {
 			isa = PBXGroup;
 			children = (
@@ -141,6 +156,7 @@
 		61C5B20F204C1FCB00B27DA4 /* Recommender */ = {
 			isa = PBXGroup;
 			children = (
+				6192B398204FFE2E009BC242 /* Search */,
 				6192B392204FC7F2009BC242 /* Recommender */,
 				6192B38F204FBEF6009BC242 /* Model */,
 				6192B389204F9DBC009BC242 /* RESTfulAPI */,
@@ -203,6 +219,15 @@
 				6192B384204F9212009BC242 /* CartViewController.swift */,
 			);
 			path = RepoProductEdge;
+			sourceTree = "<group>";
+		};
+		61F58965205013E800A81BD8 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				61F589682050142E00A81BD8 /* SearchCell.swift */,
+				61F589692050142E00A81BD8 /* SearchCell.xib */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		65577197ED38FF09C4419581 /* Frameworks */ = {
@@ -276,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				61C5B21B204C1FCB00B27DA4 /* LaunchScreen.storyboard in Resources */,
+				61F5896B2050142E00A81BD8 /* SearchCell.xib in Resources */,
 				61C5B218204C1FCB00B27DA4 /* Assets.xcassets in Resources */,
 				61C5B216204C1FCB00B27DA4 /* Main.storyboard in Resources */,
 			);
@@ -340,6 +366,7 @@
 				61C5B224204C298400B27DA4 /* ShopifyProductsTableViewController.swift in Sources */,
 				6192B388204F93E0009BC242 /* CartItemCell.swift in Sources */,
 				61C5B22F204C353D00B27DA4 /* Int64+Addition.swift in Sources */,
+				61F5896A2050142E00A81BD8 /* SearchCell.swift in Sources */,
 				6192B397204FC9F1009BC242 /* RecommenderCell.swift in Sources */,
 				6192B38B204F9DE4009BC242 /* RESTfulAPI.swift in Sources */,
 				61C5B229204C29E700B27DA4 /* ClientQuery.swift in Sources */,
@@ -348,6 +375,7 @@
 				61C5B22C204C321800B27DA4 /* ShopifyProductCell.swift in Sources */,
 				6192B38D204FB02E009BC242 /* MBProgressHUD+Addition.swift in Sources */,
 				6192B394204FC826009BC242 /* RecommenderViewController.swift in Sources */,
+				6192B39A204FFE45009BC242 /* SearchViewController.swift in Sources */,
 				6192B391204FBF0D009BC242 /* RecommenderProduct.swift in Sources */,
 				6192B385204F9212009BC242 /* CartViewController.swift in Sources */,
 				6192B381204F8CC9009BC242 /* Storefront+Addition.swift in Sources */,

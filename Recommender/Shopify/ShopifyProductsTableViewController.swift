@@ -46,7 +46,7 @@ class ShopifyProductsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ShopifyProductCell.self), for: indexPath) as! ShopifyProductCell
-        cell.productEdge = productEdges[indexPath.row]
+        cell.product = productEdges[indexPath.row].node
         return cell
     }
     

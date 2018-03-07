@@ -74,5 +74,35 @@ extension ClientQuery {
             }
         }
     }
+    static func queryProductListByIds(_ ids : [GraphQL.ID])-> Storefront.QueryRootQuery {
+        return Storefront.buildQuery{ $0
+            .nodes(ids: ids){ $0
+                .onProduct{$0
+                    .id()
+                    .title()
+                    .images(first:1){$0
+                        .edges{$0
+                            .node{$0
+                                .src()
+                            }
+                        }
+                    }
+                    .options(first:3){$0
+                        .name()
+                        .values()
+                    }
+                    .handle()
+                    .variants(first:1){$0
+                        .edges{$0
+                            .node{$0
+                                .price()
+                                .compareAtPrice()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 

@@ -1,5 +1,5 @@
 //
-//  CartItemCell.swift
+//  SearchCell.swift
 //  Recommender
 //
 //  Created by huangmin on 07/03/2018.
@@ -8,7 +8,7 @@
 
 import UIKit
 import MobileBuySDK
-class CartItemCell: UITableViewCell {
+class SearchCell: UITableViewCell {
     @IBOutlet weak var productIdLabel: UILabel!
     @IBOutlet weak var productImageView: UIImageView!
     @IBOutlet weak var productTitleLabel: UILabel!
@@ -32,8 +32,7 @@ class CartItemCell: UITableViewCell {
             productPriceLabel.text = productVariant.price.formatPrice()
         }
     }
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    @IBAction func tapAction(_ sender: Any) {
+        CartController.shared.addToCart(product)
     }
 }

@@ -15,9 +15,9 @@ class ShopifyProductCell: UITableViewCell {
     @IBOutlet weak var productTitleLabel: UILabel!
     @IBOutlet weak var productOptionsLabel: UILabel!
     @IBOutlet weak var productPriceLabel: UILabel!
-    var productEdge : Storefront.ProductEdge? {
+    var product : Storefront.Product? {
         willSet {
-            guard let newProduct = newValue?.node else { return }
+            guard let newProduct = newValue else { return }
             productIdLabel.text = "\(newProduct.id.rawValue.decodingGraphID() ?? 0)"
             productImageView.sd_setImage(with: newProduct.images.edges.first?.node.src, placeholderImage: nil, options: .retryFailed, completed: nil)
             productTitleLabel.text = newProduct.title
@@ -34,6 +34,6 @@ class ShopifyProductCell: UITableViewCell {
         }
     }
     @IBAction func tapAction(_ sender: Any) {
-        CartController.shared.addToCart(productEdge)
+        CartController.shared.addToCart(product)
     }
 }

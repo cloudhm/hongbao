@@ -20,16 +20,16 @@ class CartViewController: UITableViewController {
         configureNavigationItem()
     }
     private func configureNavigationItem(){
-        navigationItem.title = "My Cart(\(CartController.shared.productEdgesVariable.value.count))"
+        navigationItem.title = "My Cart(\(CartController.shared.productsVariable.value.count))"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Submit", style: .done, target: self, action: #selector(submit))
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return CartController.shared.productEdgesVariable.value.count
+        return CartController.shared.productsVariable.value.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell : CartItemCell = tableView.dequeueReusableCell(withIdentifier: String(describing:CartItemCell.self), for: indexPath) as! CartItemCell
-        cell.productEdge = CartController.shared.productEdgesVariable.value[indexPath.row]
+        cell.product = CartController.shared.productsVariable.value[indexPath.row]
         return cell
     }
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -37,24 +37,24 @@ class CartViewController: UITableViewController {
     }
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            CartController.shared.productEdgesVariable.value.remove(at: indexPath.row)
+            CartController.shared.productsVariable.value.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .right)
             configureNavigationItem()
         }
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let safari = SFSafariViewController(url: URL(string: "https://whatsmode.com/products/"+CartController.shared.productEdgesVariable.value[indexPath.row].node.handle)!)
+        let safari = SFSafariViewController(url: URL(string: "https://whatsmode.com/products/"+CartController.shared.productsVariable.value[indexPath.row].handle)!)
         navigationController?.present(safari, animated: true, completion: nil)
     }
     @objc func submit() {
         // API POST
         MBProgressHUD.showAnimationView(self.navigationController?.view)
         var ids : [String] = []
-        for (index, productEdge) in CartController.shared.productEdgesVariable.value.enumerated() {
+        for (index, product) in CartController.shared.productsVariable.value.enumerated() {
             if index >= uploadMaxCount {
                 break
             }
-            guard let id = productEdge.node.id.rawValue.decodingGraphID() else {
+            guard let id = product.id.rawValue.decodingGraphID() else {
                 continue
             }
             ids.append("\(id)")
@@ -67,20 +67,20 @@ class CartViewController: UITableViewController {
                 }
                 if notfoundIDs.count > 0 {
                     self?.showAlert("Not found items", notfoundIDs.description)
-                    var productEdges : [Storefront.ProductEdge] = []
-                    for (index, productEdge) in CartController.shared.productEdgesVariable.value.enumerated() {
+                    var products : [Storefront.Product] = []
+                    for (index, product) in CartController.shared.productsVariable.value.enumerated() {
                         if index >= (self?.uploadMaxCount ?? 1) {
                             break
                         }
-                        if notfoundIDs.contains(Int(productEdge.node.id.rawValue.decodingGraphID()!)) {
-                            productEdges.append(productEdge)
+                        if notfoundIDs.contains(Int(product.id.rawValue.decodingGraphID()!)) {
+                            products.append(product)
                         }
                     }
-                    CartController.shared.productEdgesVariable.value.removeSubrange(0 ..< min((self?.uploadMaxCount ?? 1),ids.count))
-                    CartController.shared.productEdgesVariable.value = productEdges + CartController.shared.productEdgesVariable.value
+                    CartController.shared.productsVariable.value.removeSubrange(0 ..< min((self?.uploadMaxCount ?? 1),ids.count))
+                    CartController.shared.productsVariable.value = products + CartController.shared.productsVariable.value
                 } else {
-                    CartController.shared.productEdgesVariable.value.removeSubrange(0 ..< min((self?.uploadMaxCount ?? 1),ids.count))
-                    if CartController.shared.productEdgesVariable.value.count > 0 {
+                    CartController.shared.productsVariable.value.removeSubrange(0 ..< min((self?.uploadMaxCount ?? 1),ids.count))
+                    if CartController.shared.productsVariable.value.count > 0 {
                         self?.submit()
                     } else {
                         self?.showAlert("Tips", "uploading task finished")

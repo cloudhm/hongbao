@@ -60,7 +60,7 @@ class RESTfulAPI {
                      method: .get,
                      parameters: ["page":page,
                                   "size":size,
-                                  "sort":"top,desc"],
+                                  "sort":"id,desc"],
                      encoding: URLEncoding.default,
                      headers: nil)
             .downloadProgress(queue: DispatchQueue.global(qos : .utility)) { progress in
@@ -75,9 +75,9 @@ class RESTfulAPI {
                     completion(nil,nil)
                     return
                 }
-                guard let content = value["content"] as? [[String : String]],
+                guard let content = value["content"] as? [[String : Any]],
                 let last = value["last"] as? Bool else {
-                    completion(nil,nil)
+                    completion(nil, nil)
                     return
                 }
                 let decoder = JSONDecoder()
@@ -99,9 +99,9 @@ class RESTfulAPI {
                            _ top : Bool,
                            _ completion : @escaping(RecommenderProduct?)->Void)-> DataRequest {
         return Alamofire
-            .request(putProductPath + productId,
+            .request(putProductPath + productId + "?top=" + (top ? "true" : "false"),
                      method: .put,
-                     parameters: ["top":top],
+                     parameters: nil,
                      encoding: URLEncoding.default,
                      headers: nil)
             .downloadProgress(queue: DispatchQueue.global(qos : .utility)) { progress in
