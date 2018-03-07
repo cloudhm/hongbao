@@ -97,7 +97,7 @@ class RESTfulAPI {
      */
     static func putProduct(_ productId : String,
                            _ top : Bool,
-                           _ completion : @escaping(RecommenderProduct?)->Void)-> DataRequest {
+                           _ completion : @escaping(RecommenderProduct?, Error?)->Void)-> DataRequest {
         return Alamofire
             .request(putProductPath + productId + "?top=" + (top ? "true" : "false"),
                      method: .put,
@@ -113,7 +113,7 @@ class RESTfulAPI {
             .responseJSON { response in
                 debugPrint(response)
                 guard let value = response.value as? [String: Any] else {
-                    completion(nil)
+                    completion(nil, response.error)
                     return
                 }
                 let decoder = JSONDecoder()
@@ -123,7 +123,7 @@ class RESTfulAPI {
                 } catch {
                     
                 }
-                completion(recommenderProduct)
+                completion(recommenderProduct, response.error)
         }
     }
     /**

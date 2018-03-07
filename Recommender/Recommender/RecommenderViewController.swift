@@ -97,17 +97,24 @@ class RecommenderViewController: UITableViewController {
     private func putProductPropertyTop(_ recommenderProduct : RecommenderProduct?, _ isOn : Bool) {
         guard let recommenderProduct = recommenderProduct else { return }
         MBProgressHUD.showAnimationView(self.navigationController?.view)
-        _ = RESTfulAPI.putProduct("\(recommenderProduct.id)", isOn) { [weak self] recommenderProduct in
+        _ = RESTfulAPI.putProduct("\(recommenderProduct.id)", isOn) { [weak self] (recommenderProduct, error) in
             MBProgressHUD.hide(self?.navigationController?.view)
-            guard let recommenderProduct = recommenderProduct,
-            let index = self?.recommenderProducts.index(of: recommenderProduct) else {
+            guard let error = error else {
+                guard let recommenderProduct = recommenderProduct,
+                    let index = self?.recommenderProducts.index(of: recommenderProduct) else {
+                        self?.tableView.reloadData()
+                        return
+                }
+                if index != NSNotFound {
+                    self?.recommenderProducts[index] = recommenderProduct
+                }
                 self?.tableView.reloadData()
                 return
             }
-            if index != NSNotFound {
-                self?.recommenderProducts[index] = recommenderProduct
-            }
-            self?.tableView.reloadData()
+            let controller = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            controller.addAction(okAction)
+            self?.navigationController?.present(controller, animated: true, completion: nil)
         }
     }
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
