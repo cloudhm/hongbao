@@ -49,7 +49,7 @@ final class Client {
 extension Client {
     func queryProductListBy(_ cursor : String?,_ refresh : Bool, _ completion : @escaping(Storefront.ProductConnection?, String?)->Void) -> Task {
         let query = ClientQuery.queryProductList(cursor)
-        let task = self.client.queryGraphWith(query, cachePolicy: refresh ? nil : .cacheFirst(expireIn: 3600), retryHandler: nil) { response, error in
+        let task = self.client.queryGraphWith(query, cachePolicy: refresh ? .cacheFirst(expireIn: 60) : .cacheFirst(expireIn: 3600), retryHandler: nil) { response, error in
             completion(response?.shop.products, error?.message())
         }
         task.resume()

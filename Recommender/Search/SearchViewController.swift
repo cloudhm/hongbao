@@ -12,6 +12,7 @@ import SafariServices
 import MBProgressHUD
 class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     // MARK: declare variables
+    var preText : String?
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     var products : [Storefront.Product]?
@@ -25,9 +26,17 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(UINib(nibName: String(describing: SearchCell.self), bundle: nil), forCellReuseIdentifier: String(describing: SearchCell.self))
         configureNavigationItem()
+        searchBar.text = preText
+        searchBarSearchButtonClicked(searchBar)
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DeferredHandle.shared.action()
     }
     private func configureNavigationItem() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(tapAction))
+        let cartBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(tapAction))
+        let addAllBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addAll))
+        navigationItem.rightBarButtonItems = [cartBarButtonItem,addAllBarButtonItem]
     }
     // MARK: UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -72,5 +81,17 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     @objc func tapAction(){
         performSegue(withIdentifier: "searchToCart", sender: nil)
+    }
+    @objc func addAll(){
+        guard let products = products else { return }
+        if products.count > 0 {
+            for product in products {
+                CartController.shared.addToCart(product)
+            }
+            let controller = UIAlertController(title: "Tips", message: "All products have been added to cart", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            controller.addAction(okAction)
+            navigationController?.present(controller, animated: true, completion: nil)
+        }
     }
 }

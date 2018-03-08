@@ -19,6 +19,10 @@ class CartViewController: UITableViewController {
         tableView.tableFooterView = view
         configureNavigationItem()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DeferredHandle.shared.action()
+    }
     private func configureNavigationItem(){
         navigationItem.title = "My Cart(\(CartController.shared.productsVariable.value.count))"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Submit", style: .done, target: self, action: #selector(submit))

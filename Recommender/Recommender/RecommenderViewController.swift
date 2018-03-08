@@ -33,6 +33,10 @@ class RecommenderViewController: UITableViewController {
         tableView.mj_header.beginRefreshing()
         configureNavigationItem()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DeferredHandle.shared.action()
+    }
     private func configureNavigationItem(){
         navigationItem.title = "Recommender Server"
     }

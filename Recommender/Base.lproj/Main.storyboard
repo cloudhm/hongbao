@@ -214,7 +214,7 @@
         <!--Search View Controller-->
         <scene sceneID="XVI-Ti-1JH">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="DYS-N7-uJE" customClass="SearchViewController" customModule="Recommender" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SearchViewController" hidesBottomBarWhenPushed="YES" id="DYS-N7-uJE" customClass="SearchViewController" customModule="Recommender" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="G5g-O2-wYC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

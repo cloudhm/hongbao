@@ -28,6 +28,10 @@ class ShopifyProductsTableViewController: UITableViewController {
         tableView.mj_header = MJRefreshNormalHeader(refreshingTarget: self, refreshingAction: #selector(refreshData))
         tableView.mj_header.beginRefreshing()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DeferredHandle.shared.action()
+    }
     private func configureNavigationItem(){
         navigationItem.title = "Shopify"
     }

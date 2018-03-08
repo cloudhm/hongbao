@@ -17,6 +17,7 @@
 		6192B394204FC826009BC242 /* RecommenderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B393204FC826009BC242 /* RecommenderViewController.swift */; };
 		6192B397204FC9F1009BC242 /* RecommenderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B396204FC9F1009BC242 /* RecommenderCell.swift */; };
 		6192B39A204FFE45009BC242 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6192B399204FFE45009BC242 /* SearchViewController.swift */; };
+		61ABF1372051231700272098 /* DeferredHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61ABF1362051231700272098 /* DeferredHandle.swift */; };
 		61C5B211204C1FCB00B27DA4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B210204C1FCB00B27DA4 /* AppDelegate.swift */; };
 		61C5B216204C1FCB00B27DA4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61C5B214204C1FCB00B27DA4 /* Main.storyboard */; };
 		61C5B218204C1FCB00B27DA4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61C5B217204C1FCB00B27DA4 /* Assets.xcassets */; };
@@ -45,6 +46,7 @@
 		6192B393204FC826009BC242 /* RecommenderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommenderViewController.swift; sourceTree = "<group>"; };
 		6192B396204FC9F1009BC242 /* RecommenderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommenderCell.swift; sourceTree = "<group>"; };
 		6192B399204FFE45009BC242 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		61ABF1362051231700272098 /* DeferredHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeferredHandle.swift; sourceTree = "<group>"; };
 		61C5B20D204C1FCB00B27DA4 /* Recommender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recommender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61C5B210204C1FCB00B27DA4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		61C5B215204C1FCB00B27DA4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -135,6 +137,14 @@
 			path = Search;
 			sourceTree = "<group>";
 		};
+		61ABF1352051228900272098 /* DeferredHandle */ = {
+			isa = PBXGroup;
+			children = (
+				61ABF1362051231700272098 /* DeferredHandle.swift */,
+			);
+			path = DeferredHandle;
+			sourceTree = "<group>";
+		};
 		61C5B204204C1FCB00B27DA4 = {
 			isa = PBXGroup;
 			children = (
@@ -156,6 +166,7 @@
 		61C5B20F204C1FCB00B27DA4 /* Recommender */ = {
 			isa = PBXGroup;
 			children = (
+				61ABF1352051228900272098 /* DeferredHandle */,
 				6192B398204FFE2E009BC242 /* Search */,
 				6192B392204FC7F2009BC242 /* Recommender */,
 				6192B38F204FBEF6009BC242 /* Model */,
@@ -274,6 +285,11 @@
 					61C5B20C204C1FCB00B27DA4 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -370,6 +386,7 @@
 				6192B397204FC9F1009BC242 /* RecommenderCell.swift in Sources */,
 				6192B38B204F9DE4009BC242 /* RESTfulAPI.swift in Sources */,
 				61C5B229204C29E700B27DA4 /* ClientQuery.swift in Sources */,
+				61ABF1372051231700272098 /* DeferredHandle.swift in Sources */,
 				61C5B211204C1FCB00B27DA4 /* AppDelegate.swift in Sources */,
 				61C5B228204C29E700B27DA4 /* Client.swift in Sources */,
 				61C5B22C204C321800B27DA4 /* ShopifyProductCell.swift in Sources */,
@@ -523,7 +540,7 @@
 				INFOPLIST_FILE = Recommender/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.whatsmode.Recommender;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whatsmode.moderoom;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -540,7 +557,7 @@
 				INFOPLIST_FILE = Recommender/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.whatsmode.Recommender;
+				PRODUCT_BUNDLE_IDENTIFIER = com.whatsmode.moderoom;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
