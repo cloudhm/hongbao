@@ -13,12 +13,16 @@ extension MBProgressHUD {
      * show animated images hud
      */
     static func showAnimationView(_ inView : UIView?) {
+        showAnimationView(inView, nil)
+    }
+    static func showAnimationView(_ inView : UIView?, _ text : String?) {
         guard let view = inView  else { return }
         MBProgressHUD.hide(for: view, animated: true)
         let hud = MBProgressHUD.showAdded(to: view, animated: false)
         hud.mode = .indeterminate
         hud.bezelView.style = .solidColor
         hud.backgroundView.style = .solidColor
+        hud.detailsLabel.text = text
         hud.show(animated: true)
     }
     /**

@@ -12,6 +12,7 @@ let postProductIDsPath = "http://192.168.20.34:3000/storefront/admin/products"
 let getProductsPath = "http://192.168.20.34:3000/storefront/admin/products"
 let putProductPath = "http://192.168.20.34:3000/storefront/admin/products/"
 let delProductPath = "http://192.168.20.34:3000/storefront/admin/products/"
+let postProductHandlesPath = "http://192.168.20.34:3000/storefront/admin/products"
 class RESTfulAPI {
     /**
      * POST product IDs
@@ -148,5 +149,37 @@ class RESTfulAPI {
                 debugPrint(response)
                 completion(response.error)
             }
+    }
+    /**
+     * POST product handles
+     * handles max count is 100
+     */
+    static func postProductsHandles(_ handles : [String],
+                                    _ completion : @escaping([Int]?, Error?)->Void)->DataRequest {
+        var query = ""
+        for handle in handles {
+            if query.count > 0 {
+                query += "&"
+            }
+            query += ("handle="+handle.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+        }
+        return Alamofire
+            .request(postProductIDsPath + "?" + query,
+                     method: .post,
+                     parameters: nil,
+                     encoding: URLEncoding.default,
+                     headers: nil)
+            .validate { (request, response, data) in
+                return .success
+            }
+            .responseJSON { response in
+                debugPrint(response)
+                guard let value = response.value as? [String: [Int]],
+                    let notfoundIDs = value["notFound"] else {
+                        completion(nil, response.error)
+                        return
+                }
+                completion(notfoundIDs,response.error)
+        }
     }
 }

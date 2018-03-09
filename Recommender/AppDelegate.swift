@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import netfox
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -15,17 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        NFX.sharedInstance().start()
         return true
     }
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        if url.scheme == "file" && (url.pathExtension == "txt" || url.pathExtension == "csv") {
-            do  {
-                let content = try NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue)
-                DeferredHandle.shared.content = content as String
-            } catch {
-            }
-        }
+        DeferredHandle.shared.configureContent(url)
         return true
     }
 }
