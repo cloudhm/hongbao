@@ -17,6 +17,7 @@ final class DeferredHandle : NSObject{
         case productHandlesCSV
         case productIdsTXT
         case productIdsCSV
+        case influencersCSV
     }
     static let shared : DeferredHandle = DeferredHandle()
     private var content : String?

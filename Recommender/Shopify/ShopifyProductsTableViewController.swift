@@ -95,5 +95,11 @@ class ShopifyProductsTableViewController: UITableViewController {
             self?.loading = false
         }
     }
+    @IBAction func showTips(_ sender: Any) {
+        let controller = UIAlertController.init(title: "Tips", message: "Support as below:\n1) ids.txt which is a utf8 plain file(eg: 1,2,3,4,5)\n2) ids.csv which only one column id\n3)products_export.csv which is exported from shopify dashboard, please remove `Body` column", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        controller.addAction(okAction)
+        navigationController?.present(controller, animated: true, completion: nil)
+    }
 }
 

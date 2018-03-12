@@ -8,11 +8,12 @@
 
 import Foundation
 import Alamofire
-let postProductIDsPath = "http://192.168.20.34:3000/storefront/admin/products"
-let getProductsPath = "http://192.168.20.34:3000/storefront/admin/products"
-let putProductPath = "http://192.168.20.34:3000/storefront/admin/products/"
-let delProductPath = "http://192.168.20.34:3000/storefront/admin/products/"
-let postProductHandlesPath = "http://192.168.20.34:3000/storefront/admin/products"
+let postProductIDsPath = "storefront/admin/products"
+let getProductsPath = "storefront/admin/products"
+let putProductPath = "storefront/admin/products/"
+let delProductPath = "storefront/admin/products/"
+let postProductHandlesPath = "storefront/admin/products"
+let getInfluencersPath = "storefront/admin/influencers"
 class RESTfulAPI {
     /**
      * POST product IDs
@@ -28,7 +29,7 @@ class RESTfulAPI {
             query += ("id="+idStr)
         }
         return Alamofire
-            .request(postProductIDsPath + "?" + query,
+            .request(SettingsManager.shared.getURL(.product) + postProductIDsPath + "?" + query,
                      method: .post,
                      parameters: nil,
                      encoding: URLEncoding.default,
@@ -57,7 +58,7 @@ class RESTfulAPI {
                             _ size : Int,
                             _ completion : @escaping([RecommenderProduct]?, Bool?)->Void)->DataRequest {
         return Alamofire
-            .request(getProductsPath,
+            .request(SettingsManager.shared.getURL(.product) + getProductsPath,
                      method: .get,
                      parameters: ["page":page,
                                   "size":size,
@@ -100,7 +101,7 @@ class RESTfulAPI {
                            _ top : Bool,
                            _ completion : @escaping(RecommenderProduct?, Error?)->Void)-> DataRequest {
         return Alamofire
-            .request(putProductPath + productId + "?top=" + (top ? "true" : "false"),
+            .request(SettingsManager.shared.getURL(.product) + putProductPath + productId + "/top" + "?top=" + (top ? "true" : "false"),
                      method: .put,
                      parameters: nil,
                      encoding: URLEncoding.default,
@@ -134,7 +135,7 @@ class RESTfulAPI {
     static func delProduct(_ productId : String,
                            _ completion : @escaping(Error?)->Void)-> DataRequest {
         return Alamofire
-            .request(delProductPath + productId,
+            .request(SettingsManager.shared.getURL(.product) + delProductPath + productId,
                      method: .delete,
                      parameters: nil,
                      encoding: URLEncoding.default,
@@ -164,7 +165,7 @@ class RESTfulAPI {
             query += ("handle="+handle.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
         }
         return Alamofire
-            .request(postProductIDsPath + "?" + query,
+            .request(SettingsManager.shared.getURL(.product) + postProductIDsPath + "?" + query,
                      method: .post,
                      parameters: nil,
                      encoding: URLEncoding.default,
@@ -180,6 +181,41 @@ class RESTfulAPI {
                         return
                 }
                 completion(notfoundIDs,response.error)
+        }
+    }
+    static func getInfluencers(_ page : Int,
+                               _ size : Int,
+                               _ completion : @escaping([Influencer]?, Bool?)->Void)->DataRequest {
+        return Alamofire
+            .request(SettingsManager.shared.getURL(.influencer) + getInfluencersPath,
+                                 method: .get,
+                                 parameters: ["page":page,
+                                              "size":size],
+                                 encoding: URLEncoding.default,
+                                 headers: nil)
+            .validate { (request, response, data) in
+                return .success
+            }
+            .responseJSON { response in
+                debugPrint(response)
+                guard let value = response.value as? [String: Any] else {
+                    completion(nil,nil)
+                    return
+                }
+                guard let content = value["content"] as? [[String : Any]],
+                    let last = value["last"] as? Bool else {
+                        completion(nil, nil)
+                        return
+                }
+                let decoder = JSONDecoder()
+                let list = (content.map{
+                    do {
+                        return try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: $0, options: []))
+                    } catch {
+                        return nil
+                    }
+                    } as [Influencer?]).flatMap{$0}
+                completion(list, last)
         }
     }
 }
