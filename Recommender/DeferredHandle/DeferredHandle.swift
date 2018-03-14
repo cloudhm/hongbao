@@ -11,6 +11,7 @@ import UIKit
 import MobileBuySDK
 import MBProgressHUD
 import ObjectiveC
+import Alamofire
 final class DeferredHandle : NSObject{
     enum DeferredHandleType {
         case none
@@ -18,34 +19,29 @@ final class DeferredHandle : NSObject{
         case productIdsTXT
         case productIdsCSV
         case influencersCSV
+        static func validateURL(_ url : URL?) -> DeferredHandleType {
+            guard let url = url else {
+                return .none
+            }
+            if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("txt") {
+                return .productIdsTXT
+            } else if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("csv") {
+                return .productIdsCSV
+            } else if url.lastPathComponent.hasPrefix("products_export") && url.lastPathComponent.hasSuffix("csv") {
+                return .productHandlesCSV
+            } else if url.lastPathComponent.hasPrefix("influencers") && url.lastPathComponent.hasSuffix("csv") {
+                return .influencersCSV
+            }
+            return .none
+        }
     }
     static let shared : DeferredHandle = DeferredHandle()
-    private var content : String?
-    private var type : DeferredHandleType = .none
+    private var contentURL : URL?
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     func action(){
-        guard let content = formatContent() else {
-            return
-        }
-        if type == .productIdsTXT || type == .productIdsCSV {
-            guard let controller : SearchViewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing: SearchViewController.self)) as? SearchViewController else {
-                return
-            }
-            controller.preText = content
-            ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
-        } else if type == .productHandlesCSV {
-            uploadHandles(content.split(separator: ",").map{String($0)})
-        }
-        self.content = nil
-        self.type = .none
-    }
-    @objc func didBecomeActive(){
-        action()
-    }
-    private func formatContent() -> String?{
         // string --> ids joint by comma
         func convertIDs(_ text : String,_ symbol : Character) -> String {
             let result = ((text.split(separator: symbol).map{
@@ -53,60 +49,78 @@ final class DeferredHandle : NSObject{
                 } as [GraphQL.ID?]).flatMap{$0}.map{$0.rawValue.decodingGraphID()} as [Int64?]).flatMap{$0}.map{"\($0)"}
             return Set(result).joined(separator: ",")
         }
-        // string --> handles joint by comma
-        func convertHandles(_ text : String) -> String {
-            var list = (text.split(separator: "\r\n").map{
-                $0.split(separator: ",").first
-            }).flatMap{$0}
-            list.removeFirst()
-            return Set(list).joined(separator: ",")
-        }
-        guard let content = self.content else { return nil }
-        if type == .productIdsCSV || type == .productIdsTXT {
-            if content.contains(",") {
-                return convertIDs(content, ",")
-            } else {
-                return convertIDs(content, "\r\n")
+        let type = DeferredHandleType.validateURL(contentURL)
+        switch type {
+        case .productHandlesCSV:
+            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
+                return
             }
-        } else if  type == .productHandlesCSV {
-            return convertHandles(content)
-        }
-        return nil
-    }
-    func configureContent(_ url : URL) {
-        if !validateURLPath(url) {
+            var elements : Set<String> = []
+            for (index,element) in list.enumerated() {
+                if index > 0 {
+                    guard let firstElement = element.first else {
+                        continue
+                    }
+                    elements.insert(firstElement)
+                }
+            }
+            uploadHandles(elements.sorted())
+            break
+        case .productIdsTXT:
+            do  {
+                let text = try NSString(contentsOf: contentURL!, encoding: String.Encoding.utf8.rawValue)
+                guard let controller : SearchViewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing: SearchViewController.self)) as? SearchViewController else {
+                        return
+                }
+                controller.preText = convertIDs(text as String,",")
+                ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
+            } catch {
+            }
+            break
+        case .productIdsCSV:
+            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
+                return
+            }
+            var elements : Set<String> = []
+            for (index,element) in list.enumerated() {
+                if index > 0 {
+                    guard let firstElement = element.first else {
+                        continue
+                    }
+                    elements.insert(firstElement)
+                }
+            }
+            let text = elements.joined(separator: ",")
+            guard let controller : SearchViewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing: SearchViewController.self)) as? SearchViewController else {
+                return
+            }
+            controller.preText = convertIDs(text,",")
+            ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
+            break
+        case .influencersCSV:
+            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
+                return
+            }
+            let influencersJSON = Influencer.convertInfluencersJSON(list)
+            for json in influencersJSON {
+                _ = RESTfulAPI.postInfluencer(json) { influencer, error in
+                    debugPrint(error)
+                }
+            }
+            break
+        default:
+            contentURL = nil
             return
         }
-        var parseContent : NSString?
-        do  {
-            parseContent = try NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue)
-        } catch {
-            let encoding : UInt = CFStringConvertEncodingToNSStringEncoding(CFStringEncoding(CFStringEncodings.macChineseSimp.rawValue))
-            do  {
-                let data = try Data(contentsOf: url)
-                parseContent = NSString(data: data, encoding: encoding)
-            } catch {
-                
-            }
-        }
-        guard let content = parseContent else { return }
-        self.content = content as String
-        if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("txt") {
-            self.type = .productIdsTXT
-        } else if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("csv") {
-            self.type = .productIdsCSV
-        } else if url.lastPathComponent.hasPrefix("products_export") && url.lastPathComponent.hasSuffix("csv") {
-            self.type = .productHandlesCSV
-        }
+        self.contentURL = nil
     }
-    private func validateURLPath(_ url : URL) -> Bool {
-        if url.scheme == "file" &&
-            ((url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("txt") ) ||
-                (url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("csv")) ||
-                (url.lastPathComponent.hasPrefix("products_export") && url.lastPathComponent.hasSuffix("csv"))) {
-            return true
-        }
-        return false
+    
+    
+    @objc func didBecomeActive(){
+        action()
+    }
+    func configureContent(_ url : URL) {
+        contentURL = url
     }
     private func uploadHandles(_ handles : [String]) {
         if handles.count == 0 {

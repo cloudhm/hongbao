@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         NFX.sharedInstance().start()
-        
+        /*
         let path = Bundle.main.path(forResource: "influencers", ofType: "json")
         do {
             let data = try Data.init(contentsOf: URL.init(fileURLWithPath: path!))
@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             
         }
- 
+        */
         return true
     }
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {

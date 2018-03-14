@@ -14,6 +14,7 @@ let putProductPath = "storefront/admin/products/"
 let delProductPath = "storefront/admin/products/"
 let postProductHandlesPath = "storefront/admin/products"
 let getInfluencersPath = "storefront/admin/influencers"
+let postInfluencerPath = "storefront/admin/influencers"
 class RESTfulAPI {
     /**
      * POST product IDs
@@ -183,6 +184,7 @@ class RESTfulAPI {
                 completion(notfoundIDs,response.error)
         }
     }
+    //
     static func getInfluencers(_ page : Int,
                                _ size : Int,
                                _ completion : @escaping([Influencer]?, Bool?)->Void)->DataRequest {
@@ -216,6 +218,32 @@ class RESTfulAPI {
                     }
                     } as [Influencer?]).flatMap{$0}
                 completion(list, last)
+        }
+    }
+    static func postInfluencer(_ influencerJSON : [String : Any],
+                               _ completion : @escaping(Influencer?, Error?)->Void)->DataRequest{
+        return Alamofire
+            .request(SettingsManager.shared.getURL(.influencer) + postInfluencerPath,
+                                 method: .post,
+                                 parameters: influencerJSON,
+                                 encoding: JSONEncoding.default,
+                                 headers: nil)
+            .validate { (request, response, data) in
+                return .success
+            }
+            .responseJSON { response in
+                guard let value = response.value as? [String: Any] else {
+                    completion(nil, response.error)
+                    return
+                }
+                let decoder = JSONDecoder()
+                var influencer : Influencer?
+                do {
+                    influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
+                } catch {
+                    
+                }
+                completion(influencer, nil)
         }
     }
 }

@@ -46,6 +46,12 @@ final class SettingsBean : Decodable, Encodable {
         host = try values.decode(String.self, forKey: .host)
         port = try values.decode(String.self, forKey: .port)
     }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: SettingsBeanKeys.self)
+        try container.encode(title, forKey: .title)
+        try container.encode(host, forKey: .host)
+        try container.encode(port, forKey: .port)
+    }
     static func fetchSettingConfigurationsFromPlist()->[SettingsBean]{
         let exist = FileManager.default.fileExists(atPath: documentPath().path)
         if !exist {
@@ -64,15 +70,15 @@ final class SettingsBean : Decodable, Encodable {
     }
     static func flushedSettingConfigurationsToPlist(_ settingsBeans : [SettingsBean]?) {
         guard let settingsBeans = settingsBeans else { return }
-        var dicts : [[String : String]] = []
-        for settingsBean in settingsBeans {
-            var dict : [String : String] = [:]
-            dict[SettingsBeanKeys.title.rawValue] = settingsBean.title
-            dict[SettingsBeanKeys.host.rawValue] = settingsBean.host
-            dict[SettingsBeanKeys.port.rawValue] = settingsBean.port
-            dicts.append(dict)
+        let encoder = JSONEncoder()
+        do  {
+            let data = try encoder.encode(settingsBeans)
+            let dicts = try JSONSerialization.jsonObject(with: data, options: [])
+            guard let array = dicts as? [[String:String]] else { return }
+            (array as NSArray).write(to: documentPath(), atomically: true)
+        } catch {
+            
         }
-        (dicts as NSArray).write(to: documentPath(), atomically: true)
     }
     static func documentPath()->URL {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/Settings.plist"

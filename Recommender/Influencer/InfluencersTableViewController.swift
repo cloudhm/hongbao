@@ -43,6 +43,9 @@ class InfluencersTableViewController: UITableViewController {
             let safari = SFSafariViewController(url: handle)
             self?.navigationController?.present(safari, animated: true, completion: nil)
         }
+        cell.editInfluencer = { [weak self] influencer in
+            self?.performSegue(withIdentifier: "goToInfluencerDetail", sender: influencer)
+        }
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -89,6 +92,12 @@ class InfluencersTableViewController: UITableViewController {
             }
             self?.tableView.reloadData()
             self?.loading = false
+        }
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if  segue.identifier == "goToInfluencerDetail" {
+            guard let controller = segue.destination as? InfluencerDetailTableViewController else {return}
+            controller.influencer = sender as? Influencer
         }
     }
 }
