@@ -14,7 +14,6 @@ class InfluencerCell: UITableViewCell, UICollectionViewDataSource, UICollectionV
     @IBOutlet weak var websiteLabel: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
     var action : ((_ influencerSocial : InfluencerSocial) -> Void)?
-    var editInfluencer : ((_ influencer : Influencer) ->Void)?
     var influencer : Influencer? {
         willSet {
             avatarImageView.sd_setImage(with: newValue?.image, placeholderImage: nil, options: .retryFailed, completed: nil)
@@ -28,10 +27,8 @@ class InfluencerCell: UITableViewCell, UICollectionViewDataSource, UICollectionV
     override func awakeFromNib() {
         super.awakeFromNib()
         selectionStyle = .none
-    }
-    @IBAction func tapAction(_ sender: Any) {
-        guard let influencer = influencer else {return}
-        editInfluencer?(influencer)
+        let flowLayout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        flowLayout.itemSize = CGSize(width: 50, height: 50)
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return influencer?.socials?.count ?? 0
@@ -50,7 +47,10 @@ class InfluencerSocialCell : UICollectionViewCell {
     @IBOutlet weak var avatarImageView: UIImageView!
     var influencerSocial : InfluencerSocial? {
         willSet{
-                        avatarImageView.sd_setImage(with: newValue?.image, placeholderImage: nil, options: .retryFailed, completed: nil)
+            avatarImageView.sd_setImage(with: newValue?.image,
+                                        placeholderImage: nil,
+                                        options: .retryFailed,
+                                        completed: nil)
         }
     }
     override func awakeFromNib() {

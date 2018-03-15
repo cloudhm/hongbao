@@ -19,6 +19,7 @@ final class DeferredHandle : NSObject{
         case productIdsTXT
         case productIdsCSV
         case influencersCSV
+        case updateInfluencersCSV
         static func validateURL(_ url : URL?) -> DeferredHandleType {
             guard let url = url else {
                 return .none
@@ -31,6 +32,8 @@ final class DeferredHandle : NSObject{
                 return .productHandlesCSV
             } else if url.lastPathComponent.hasPrefix("influencers") && url.lastPathComponent.hasSuffix("csv") {
                 return .influencersCSV
+            } else if url.lastPathComponent.hasPrefix("update_influencers") && url.lastPathComponent.hasSuffix("csv"){
+                return .updateInfluencersCSV
             }
             return .none
         }
@@ -96,7 +99,6 @@ final class DeferredHandle : NSObject{
             }
             controller.preText = convertIDs(text,",")
             ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
-            break
         case .influencersCSV:
             guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
                 return
@@ -107,7 +109,20 @@ final class DeferredHandle : NSObject{
                     debugPrint(error)
                 }
             }
-            break
+        case .updateInfluencersCSV:
+            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
+                return
+            }
+            let influencersJSON = Influencer.convertInfluencersJSON(list)
+            for json in influencersJSON {
+                guard let idStr = json[Influencer.InfluencerKeys.id.rawValue] as? String,
+                let id = Int(idStr) else {
+                    continue
+                }
+                _ = RESTfulAPI.putInfluencer(id, json) { influencer, error in
+                    debugPrint(error)
+                }
+            }
         default:
             contentURL = nil
             return

@@ -38,7 +38,7 @@ class RecommenderViewController: UITableViewController {
         DeferredHandle.shared.action()
     }
     private func configureNavigationItem(){
-        navigationItem.title = "Recommender Server"
+        navigationItem.title = "推荐商品库"
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return recommenderProducts.count

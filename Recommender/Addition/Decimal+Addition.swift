@@ -21,4 +21,13 @@ extension Decimal {
         formatter.numberStyle = .none
         return formatter.currencySymbol + formatter.string(from: NSDecimalNumber(decimal: self))!
     }
+    /**
+     * dividing decimal
+     */
+    func dividing(by rhs: Decimal) -> Decimal {
+        var (lhs, rhs) = (self, rhs)
+        var result = Decimal()
+        NSDecimalDivide(&result, &lhs, &rhs, NSDecimalNumber.RoundingMode.up)
+        return result
+    }
 }

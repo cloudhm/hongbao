@@ -15,13 +15,14 @@ let delProductPath = "storefront/admin/products/"
 let postProductHandlesPath = "storefront/admin/products"
 let getInfluencersPath = "storefront/admin/influencers"
 let postInfluencerPath = "storefront/admin/influencers"
+let putInfluencerPath = "storefront/admin/influencers/"
 class RESTfulAPI {
     /**
      * POST product IDs
      * ids max count is 100
      */
     static func postProductsIDs(_ ids : [String],
-                                _ completion : @escaping([Int]?, Error?)->Void)->DataRequest {
+                                _ completion : @escaping([String]?, Error?)->Void)->DataRequest {
         var query = ""
         for idStr in ids {
             if query.count > 0 {
@@ -43,12 +44,11 @@ class RESTfulAPI {
             }
             .responseJSON { response in
                 debugPrint(response)
-                guard let value = response.value as? [String: [Int]],
-                let notfoundIDs = value["notFound"] else {
+                guard let value = response.value as? [String: Any] else {
                     completion(nil, response.error)
                     return
                 }
-                completion(notfoundIDs,response.error)
+                completion(value.keys.map{$0}, response.error)
             }
     }
     /**
@@ -192,7 +192,8 @@ class RESTfulAPI {
             .request(SettingsManager.shared.getURL(.influencer) + getInfluencersPath,
                                  method: .get,
                                  parameters: ["page":page,
-                                              "size":size],
+                                              "size":size,
+                                              "sort":"name,asc"],
                                  encoding: URLEncoding.default,
                                  headers: nil)
             .validate { (request, response, data) in
@@ -220,6 +221,10 @@ class RESTfulAPI {
                 completion(list, last)
         }
     }
+    /**
+     * create a influencer
+     * post method, influencerJSON required
+     */
     static func postInfluencer(_ influencerJSON : [String : Any],
                                _ completion : @escaping(Influencer?, Error?)->Void)->DataRequest{
         return Alamofire
@@ -228,6 +233,37 @@ class RESTfulAPI {
                                  parameters: influencerJSON,
                                  encoding: JSONEncoding.default,
                                  headers: nil)
+            .validate { (request, response, data) in
+                return .success
+            }
+            .responseJSON { response in
+                guard let value = response.value as? [String: Any] else {
+                    completion(nil, response.error)
+                    return
+                }
+                let decoder = JSONDecoder()
+                var influencer : Influencer?
+                do {
+                    influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
+                } catch {
+                    
+                }
+                completion(influencer, nil)
+        }
+    }
+    /**
+     * update influencer
+     * id / influencerJSON required
+     */
+    static func putInfluencer(_ id : Int,
+                              _ influencerJSON : [String:Any],
+                              _ completion : @escaping(Influencer?, Error?)->Void) -> DataRequest {
+        return Alamofire
+            .request(SettingsManager.shared.getURL(.influencer) + postInfluencerPath + "/\(id)",
+                     method: .put,
+                     parameters: influencerJSON,
+                     encoding: JSONEncoding.default,
+                     headers: nil)
             .validate { (request, response, data) in
                 return .success
             }

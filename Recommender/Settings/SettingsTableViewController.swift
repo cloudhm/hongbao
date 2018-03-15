@@ -12,7 +12,7 @@ class SettingsTableViewController: UITableViewController {
     var settingsBeans : [SettingsBean] = SettingsManager.shared.settingsBeans
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Settings"
+        navigationItem.title = "设置"
         let view = UIView()
         tableView.tableHeaderView = view
         tableView.tableFooterView = view
@@ -30,5 +30,10 @@ class SettingsTableViewController: UITableViewController {
             self?.view.endEditing(true)
         }
         return cell
+    }
+    @IBAction func tapAction(_ sender: Any) {
+        SettingsManager.shared.reset()
+        settingsBeans = SettingsManager.shared.settingsBeans
+        tableView.reloadData()
     }
 }

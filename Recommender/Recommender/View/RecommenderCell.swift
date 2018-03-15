@@ -23,7 +23,7 @@ class RecommenderCell: UITableViewCell {
             productIdLabel.text = "\(newProduct.id)"
             productImageView.sd_setImage(with: newProduct.image, placeholderImage: nil, options: .retryFailed, completed: nil)
             productTitleLabel.text = newProduct.title
-            productPriceLabel.text = "$" + (newProduct.min_price ?? "")
+            productPriceLabel.text = newProduct.min_price?.formatPrice()
             topSwitch.isOn = newProduct.top ?? false
         }
     }

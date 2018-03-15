@@ -18,16 +18,20 @@ class SettingsManager {
         for settingsBean in settingsBeans {
             switch settingsBeanType {
             case .influencer:
-                if settingsBean.title == "Influencer" {
+                if settingsBean.title == "网红" {
                     return settingsBean.path()
                 }
             case .product:
-                if settingsBean.title == "Product" {
+                if settingsBean.title == "商品" {
                     return settingsBean.path()
                 }
             }
         }
         return ""
+    }
+    func reset(){
+        SettingsBean.reset()
+        settingsBeans = SettingsBean.fetchSettingConfigurationsFromPlist()
     }
 }
 final class SettingsBean : Decodable, Encodable {
@@ -35,6 +39,7 @@ final class SettingsBean : Decodable, Encodable {
     var host : String
     var port : String
     var edited : Bool = false // only for UI
+    var isHttps : Bool = true
     enum SettingsBeanKeys : String, CodingKey {
         case title
         case host
@@ -55,7 +60,12 @@ final class SettingsBean : Decodable, Encodable {
     static func fetchSettingConfigurationsFromPlist()->[SettingsBean]{
         let exist = FileManager.default.fileExists(atPath: documentPath().path)
         if !exist {
-            let dicts : [[String: String]] = [["title":"Influencer","host":"192.168.20.43","port":"3000"],["title":"Product","host":"192.168.20.43","port":"3000"]]
+            let dicts : [[String: String]] = [["title":"网红",
+                                               "host":"test.whatsmode.com/formula-1.0-storefront",
+                                               "port":""],
+                                              ["title":"商品",
+                                               "host":"test.whatsmode.com/formula-1.0-storefront",
+                                               "port":""]]
             (dicts as NSArray).write(to: documentPath(), atomically: true)
         }
         let array = NSArray(contentsOf: documentPath())! as Array
@@ -87,7 +97,7 @@ final class SettingsBean : Decodable, Encodable {
     func path()->String{
         let settingsBeanHost = host.trimmingCharacters(in: .whitespacesAndNewlines)
         let settingsBeanPort = port.trimmingCharacters(in: .whitespacesAndNewlines)
-        var settingsBeanPath = "http://"
+        var settingsBeanPath = isHttps ? "https://" : "http://"
         if settingsBeanHost.count > 0 {
             settingsBeanPath += settingsBeanHost
         }
@@ -97,5 +107,12 @@ final class SettingsBean : Decodable, Encodable {
             settingsBeanPath += "/"
         }
         return settingsBeanPath
+    }
+    static func reset(){
+        do  {
+            try FileManager.default.removeItem(at: documentPath())
+        } catch {
+            
+        }
     }
 }

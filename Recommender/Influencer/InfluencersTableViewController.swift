@@ -22,9 +22,10 @@ class InfluencersTableViewController: UITableViewController {
     var currentPage : Int = 0
     let size : Int = 10
     var last : Bool = false
+    private var documentInteractionController : UIDocumentInteractionController?
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Influencers"
+        navigationItem.title = "网红列表"
         let view = UIView()
         tableView.tableHeaderView = view
         tableView.tableFooterView = view
@@ -42,9 +43,6 @@ class InfluencersTableViewController: UITableViewController {
             guard let handle = influencerSocial.handle else {return}
             let safari = SFSafariViewController(url: handle)
             self?.navigationController?.present(safari, animated: true, completion: nil)
-        }
-        cell.editInfluencer = { [weak self] influencer in
-            self?.performSegue(withIdentifier: "goToInfluencerDetail", sender: influencer)
         }
         return cell
     }
@@ -94,12 +92,25 @@ class InfluencersTableViewController: UITableViewController {
             self?.loading = false
         }
     }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if  segue.identifier == "goToInfluencerDetail" {
-            guard let controller = segue.destination as? InfluencerDetailTableViewController else {return}
-            controller.influencer = sender as? Influencer
+    @IBAction func convertCSVToShare(_ sender: UIBarButtonItem) {
+        guard let filePath = Influencer.convertToCSV(influencers) else {
+            debugPrint("convert failed")
+            return
         }
+        let url = URL(fileURLWithPath: filePath)
+        documentInteractionController = UIDocumentInteractionController()
+        documentInteractionController?.uti = "com.microsoft.excel.xls"
+        documentInteractionController?.url = url
+        documentInteractionController?.delegate = self
+        documentInteractionController?.presentOpenInMenu(from: view.bounds, in: view, animated: true)
     }
 }
-
+extension InfluencersTableViewController : UIDocumentInteractionControllerDelegate {
+    func documentInteractionControllerWillPresentOpenInMenu(_ controller: UIDocumentInteractionController) {
+        print("will present")
+    }
+    func documentInteractionControllerDidDismissOpenInMenu(_ controller: UIDocumentInteractionController) {
+        print("did miss")
+    }
+}
 

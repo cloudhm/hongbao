@@ -24,8 +24,8 @@ class CartViewController: UITableViewController {
         DeferredHandle.shared.action()
     }
     private func configureNavigationItem(){
-        navigationItem.title = "My Cart(\(CartController.shared.productsVariable.value.count))"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Submit", style: .done, target: self, action: #selector(submit))
+        navigationItem.title = "仓库(\(CartController.shared.productsVariable.value.count))"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "提交", style: .done, target: self, action: #selector(submit))
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return CartController.shared.productsVariable.value.count
@@ -63,20 +63,27 @@ class CartViewController: UITableViewController {
             }
             ids.append("\(id)")
         }
-        _ = RESTfulAPI.postProductsIDs(ids) {[weak self] notfoundIDs, error in
+        _ = RESTfulAPI.postProductsIDs(ids) {[weak self] successIDs, error in
             MBProgressHUD.hide(self?.navigationController?.view)
             guard let error = error else {
-                guard let notfoundIDs = notfoundIDs else {
+                guard let successIDs = successIDs else {
                     return
                 }
+                let notfoundIDs = (ids.map{
+                    if successIDs.contains($0) {
+                        return nil
+                    } else {
+                        return $0
+                    }
+                    } as [String?]).flatMap{$0}
                 if notfoundIDs.count > 0 {
-                    self?.showAlert("Not found items", notfoundIDs.description)
+                    self?.showAlert("未成功上传的商品", notfoundIDs.description)
                     var products : [Storefront.Product] = []
                     for (index, product) in CartController.shared.productsVariable.value.enumerated() {
                         if index >= (self?.uploadMaxCount ?? 1) {
                             break
                         }
-                        if notfoundIDs.contains(Int(product.id.rawValue.decodingGraphID()!)) {
+                        if notfoundIDs.contains("\(product.id.rawValue.decodingGraphID()!)") {
                             products.append(product)
                         }
                     }
@@ -87,19 +94,19 @@ class CartViewController: UITableViewController {
                     if CartController.shared.productsVariable.value.count > 0 {
                         self?.submit()
                     } else {
-                        self?.showAlert("Tips", "uploading task finished")
+                        self?.showAlert("提示", "上传已完成")
                     }
                 }
                 self?.tableView.reloadData()
                 self?.configureNavigationItem()
                 return
             }
-            self?.showAlert("Error", error.localizedDescription)
+            self?.showAlert("错误", error.localizedDescription)
         }
     }
     func showAlert(_ title : String, _ content : String) {
         let controller = UIAlertController(title: title, message: content, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
         controller.addAction(okAction)
         self.present(controller, animated: true, completion: nil)
     }

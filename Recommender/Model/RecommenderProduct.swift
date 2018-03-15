@@ -11,16 +11,14 @@ final class RecommenderProduct : Decodable {
     var id : Int
     var title : String?
     var handle : String?
-    var min_price : String?
-    var max_price : String?
+    var min_price : Decimal?
     var image : URL?
     var top : Bool?
     enum RecommenderProductKeys : String, CodingKey {
         case id
         case title
         case handle
-        case min_price
-        case max_price
+        case min_price = "minPriceCent"
         case image
         case top
     }
@@ -29,8 +27,8 @@ final class RecommenderProduct : Decodable {
         id = try values.decode(Int.self, forKey: .id)
         title = try values.decodeIfPresent(String.self, forKey: .title)
         handle = try values.decodeIfPresent(String.self, forKey: .handle)
-        min_price = try values.decodeIfPresent(String.self, forKey: .min_price)
-        max_price = try values.decodeIfPresent(String.self, forKey: .max_price)
+        let price = try values.decodeIfPresent(Decimal.self, forKey: .min_price)
+        min_price = price?.dividing(by: Decimal(100))
         image = try values.decodeIfPresent(URL.self, forKey: .image)
         top = try values.decodeIfPresent(Bool.self, forKey: .top)
     }

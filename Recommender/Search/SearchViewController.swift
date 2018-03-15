@@ -34,8 +34,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         DeferredHandle.shared.action()
     }
     private func configureNavigationItem() {
-        let cartBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(tapAction))
-        let addAllBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addAll))
+        let cartBarButtonItem = UIBarButtonItem(title: "仓库", style: .done, target: self, action: #selector(tapAction))
+        let addAllBarButtonItem = UIBarButtonItem(title: "全加",style: .done, target: self, action: #selector(addAll))
         navigationItem.rightBarButtonItems = [cartBarButtonItem,addAllBarButtonItem]
     }
     // MARK: UITableViewDataSource
@@ -68,8 +68,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             _ = Client.shared.queryProductsByIDs(ids) { [weak self] (products, errMsg) in
                 MBProgressHUD.hide(self?.navigationController?.view)
                 if errMsg != nil {
-                    let controller = UIAlertController(title: "Error", message: errMsg, preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    let controller = UIAlertController(title: "错误", message: errMsg, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
                     controller.addAction(okAction)
                     self?.navigationController?.present(controller, animated: true, completion: nil)
                 } else {
@@ -88,8 +88,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
             for product in products {
                 CartController.shared.addToCart(product)
             }
-            let controller = UIAlertController(title: "Tips", message: "All products have been added to cart", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let controller = UIAlertController(title: "提示", message: "所有商品已加入仓库", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
             controller.addAction(okAction)
             navigationController?.present(controller, animated: true, completion: nil)
         }
