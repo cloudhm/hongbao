@@ -67,7 +67,7 @@ final class DeferredHandle : NSObject{
                     elements.insert(firstElement)
                 }
             }
-            uploadHandles(elements.sorted())
+            uploadHandles(elements.sorted().map{ URL(string: $0)?.lastPathComponent ?? $0}.map{$0.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!})
             break
         case .productIdsTXT:
             do  {

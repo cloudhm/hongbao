@@ -169,9 +169,7 @@ class RESTfulAPI {
      */
     static func postProductsHandles(_ handles : [String],
                                     _ completion : @escaping([String]?, Error?)->Void)->DataRequest {
-        let query = handles.map{
-            "handle="+$0
-        }.joined(separator: "&")
+        let query = handles.map{ "handle="+$0 }.joined(separator: "&")
         return Alamofire
             .request(SettingsManager.shared.getURL(.product) + postProductIDsPath + "?" + query,
                      method: .post,
