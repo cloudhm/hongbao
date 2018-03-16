@@ -50,9 +50,12 @@ final class Influencer : Decodable, Encodable {
         func socialJSON(_ line : [String],
                         _ handleIndex : Int?,
                         _ idIndex : Int?)->[String : Any]? {
-            guard let handleIndex = handleIndex,
-                let handle = URL(string: line[handleIndex]),
-                let socialType = InfluencerSocial.InfluencerSocialType.inferSocialType(handle) else {return nil}
+            guard let handleIndex = handleIndex  else {return nil}
+            if handleIndex >= line.count { return nil }
+            guard let handle = URL(string: line[handleIndex]),
+                let socialType = InfluencerSocial.InfluencerSocialType.inferSocialType(handle) else {
+                    return nil
+            }
             var socailJSON : [String : Any] = [:]
             socailJSON[InfluencerSocial.InfluencerSocialKeys.handle.rawValue] = handle.description
             if idIndex != nil {

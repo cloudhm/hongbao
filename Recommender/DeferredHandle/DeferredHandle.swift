@@ -104,25 +104,57 @@ final class DeferredHandle : NSObject{
                 return
             }
             let influencersJSON = Influencer.convertInfluencersJSON(list)
+            if influencersJSON.count == 0 { return }
+            let operationQueue : OperationQueue = OperationQueue()
+            operationQueue.maxConcurrentOperationCount = 1
+            MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "上传中\n请等待...")
             for json in influencersJSON {
-                _ = RESTfulAPI.postInfluencer(json) { influencer, error in
-                    debugPrint(error)
-                }
+                let block = BlockOperation(block: {
+                    _ = RESTfulAPI.postInfluencer(json) { influencer, error in
+                        debugPrint(error)
+                        if influencer != nil {
+                            sleep(1)
+                        }
+                    }
+                })
+                operationQueue.addOperations([block], waitUntilFinished: true)
             }
+            let block = BlockOperation(block: {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
+                }
+            })
+            operationQueue.addOperations([block], waitUntilFinished: true)
         case .updateInfluencersCSV:
             guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
                 return
             }
             let influencersJSON = Influencer.convertInfluencersJSON(list)
+            if influencersJSON.count == 0 { return }
+            let operationQueue : OperationQueue = OperationQueue()
+            operationQueue.maxConcurrentOperationCount = 1
+            MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "上传中\n请等待...")
             for json in influencersJSON {
-                guard let idStr = json[Influencer.InfluencerKeys.id.rawValue] as? String,
-                let id = Int(idStr) else {
-                    continue
-                }
-                _ = RESTfulAPI.putInfluencer(id, json) { influencer, error in
-                    debugPrint(error)
-                }
+                let block = BlockOperation(block: {
+                    guard let idStr = json[Influencer.InfluencerKeys.id.rawValue] as? String,
+                        let id = Int(idStr) else {
+                            return
+                    }
+                    _ = RESTfulAPI.putInfluencer(id, json) { influencer, error in
+                        debugPrint(error)
+                        if influencer != nil {
+                            sleep(1)
+                        }
+                    }
+                })
+                operationQueue.addOperations([block], waitUntilFinished: true)
             }
+            let block = BlockOperation(block: {
+                DispatchQueue.main.async {
+                    MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
+                }
+            })
+            operationQueue.addOperations([block], waitUntilFinished: true)
         default:
             contentURL = nil
             return
@@ -141,15 +173,15 @@ final class DeferredHandle : NSObject{
         if handles.count == 0 {
             return
         }
-        MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "Uploading\nPlease waiting...")
+        MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "上传中\n请等待...")
         _ = RESTfulAPI.postProductsHandles(handles) { (ids, error) in
             MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
             var controller : UIAlertController?
             if error != nil {
-                controller = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                controller = UIAlertController(title: "错误", message: error?.localizedDescription, preferredStyle: .alert)
             } else {
-                controller = UIAlertController(title: "Tips", message: "Upload finished", preferredStyle: .alert)
+                controller = UIAlertController(title: "提示", message: "上传完成了", preferredStyle: .alert)
             }
             controller?.addAction(okAction)
             guard let alertController = controller else { return }

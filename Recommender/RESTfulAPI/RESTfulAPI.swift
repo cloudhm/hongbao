@@ -23,13 +23,8 @@ class RESTfulAPI {
      */
     static func postProductsIDs(_ ids : [String],
                                 _ completion : @escaping([String]?, Error?)->Void)->DataRequest {
-        var query = ""
-        for idStr in ids {
-            if query.count > 0 {
-                query += "&"
-            }
-            query += ("id="+idStr)
-        }
+        
+        let query = ids.map{"id="+$0}.joined(separator: "&")
         return Alamofire
             .request(SettingsManager.shared.getURL(.product) + postProductIDsPath + "?" + query,
                      method: .post,
@@ -43,12 +38,17 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                debugPrint(response)
-                guard let value = response.value as? [String: Any] else {
-                    completion(nil, response.error)
+                guard let error = handleResponse(response) else {
+                    guard let value = response.value as? [String: Any] else {
+                        completion(nil, NSError(domain: "error",
+                                                code: 500,
+                                                userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error)
+                        return
+                    }
+                    completion(value.keys.map{$0}, response.error)
                     return
                 }
-                completion(value.keys.map{$0}, response.error)
+                completion(nil, error)
             }
     }
     /**
@@ -73,25 +73,28 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                debugPrint(response)
-                guard let value = response.value as? [String: Any] else {
-                    completion(nil,nil)
-                    return
-                }
-                guard let content = value["content"] as? [[String : Any]],
-                let last = value["last"] as? Bool else {
-                    completion(nil, nil)
-                    return
-                }
-                let decoder = JSONDecoder()
-                let list = (content.map{
-                    do {
-                        return try decoder.decode(RecommenderProduct.self, from: JSONSerialization.data(withJSONObject: $0, options: []))
-                    } catch {
-                        return nil
+                guard let _ = handleResponse(response) else {
+                    guard let value = response.value as? [String: Any] else {
+                        completion(nil,nil)
+                        return
                     }
-                } as [RecommenderProduct?]).flatMap{$0}
-                completion(list, last)
+                    guard let content = value["content"] as? [[String : Any]],
+                        let last = value["last"] as? Bool else {
+                            completion(nil, nil)
+                            return
+                    }
+                    let decoder = JSONDecoder()
+                    let list = (content.map{
+                        do {
+                            return try decoder.decode(RecommenderProduct.self, from: JSONSerialization.data(withJSONObject: $0, options: []))
+                        } catch {
+                            return nil
+                        }
+                        } as [RecommenderProduct?]).flatMap{$0}
+                    completion(list, last)
+                    return
+                }
+                completion(nil, nil)
             }
     }
     /**
@@ -114,19 +117,24 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                debugPrint(response)
-                guard let value = response.value as? [String: Any] else {
-                    completion(nil, response.error)
+                guard let error = handleResponse(response) else {
+                    guard let value = response.value as? [String: Any] else {
+                        completion(nil, NSError(domain: "error",
+                                                code: 500,
+                                                userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error)
+                        return
+                    }
+                    let decoder = JSONDecoder()
+                    var recommenderProduct : RecommenderProduct?
+                    do {
+                        recommenderProduct = try decoder.decode(RecommenderProduct.self, from: JSONSerialization.data(withJSONObject: value, options: []))
+                    } catch {
+                        
+                    }
+                    completion(recommenderProduct, response.error)
                     return
                 }
-                let decoder = JSONDecoder()
-                var recommenderProduct : RecommenderProduct?
-                do {
-                    recommenderProduct = try decoder.decode(RecommenderProduct.self, from: JSONSerialization.data(withJSONObject: value, options: []))
-                } catch {
-                    
-                }
-                completion(recommenderProduct, response.error)
+                completion(nil, error)
         }
     }
     /**
@@ -148,8 +156,11 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                debugPrint(response)
-                completion(response.error)
+                guard let error = handleResponse(response) else {
+                    completion(nil)
+                    return
+                }
+                completion(error)
             }
     }
     /**
@@ -157,14 +168,10 @@ class RESTfulAPI {
      * handles max count is 100
      */
     static func postProductsHandles(_ handles : [String],
-                                    _ completion : @escaping([Int]?, Error?)->Void)->DataRequest {
-        var query = ""
-        for handle in handles {
-            if query.count > 0 {
-                query += "&"
-            }
-            query += ("handle="+handle.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
-        }
+                                    _ completion : @escaping([String]?, Error?)->Void)->DataRequest {
+        let query = handles.map{
+            "handle="+$0
+        }.joined(separator: "&")
         return Alamofire
             .request(SettingsManager.shared.getURL(.product) + postProductIDsPath + "?" + query,
                      method: .post,
@@ -175,13 +182,17 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                debugPrint(response)
-                guard let value = response.value as? [String: [Int]],
-                    let notfoundIDs = value["notFound"] else {
-                        completion(nil, response.error)
+                guard let error = handleResponse(response) else {
+                    guard let values = response.value as? [String : Any] else {
+                        completion(nil, NSError(domain: "error",
+                                                code: 500,
+                                                userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error)
                         return
+                    }
+                    completion(values.keys.map{$0},nil)
+                    return
                 }
-                completion(notfoundIDs,response.error)
+                completion(nil, error)
         }
     }
     //
@@ -237,18 +248,24 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                guard let value = response.value as? [String: Any] else {
-                    completion(nil, response.error)
+                guard let error = handleResponse(response) else {
+                    guard let value = response.value as? [String: Any] else {
+                        completion(nil,NSError(domain: "error",
+                                               code: 500,
+                                               userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error)
+                        return
+                    }
+                    let decoder = JSONDecoder()
+                    var influencer : Influencer?
+                    do {
+                        influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
+                    } catch {
+                        
+                    }
+                    completion(influencer, nil)
                     return
                 }
-                let decoder = JSONDecoder()
-                var influencer : Influencer?
-                do {
-                    influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
-                } catch {
-                    
-                }
-                completion(influencer, nil)
+                completion(nil, error)
         }
     }
     /**
@@ -268,18 +285,43 @@ class RESTfulAPI {
                 return .success
             }
             .responseJSON { response in
-                guard let value = response.value as? [String: Any] else {
-                    completion(nil, response.error)
+                guard let error = handleResponse(response) else {
+                    guard let value = response.value as? [String: Any] else {
+                        completion(nil, NSError(domain: "error",
+                                                code: 500,
+                                                userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error)
+                        return
+                    }
+                    let decoder = JSONDecoder()
+                    var influencer : Influencer?
+                    do {
+                        influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
+                    } catch {
+                        
+                    }
+                    completion(influencer, nil)
                     return
                 }
-                let decoder = JSONDecoder()
-                var influencer : Influencer?
-                do {
-                    influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: value, options: []))
-                } catch {
-                    
-                }
-                completion(influencer, nil)
+                completion(nil, error)
         }
+    }
+    static func handleResponse(_ response : DataResponse<Any>) -> Error? {
+        debugPrint(response)
+        guard let err = response.error else {
+            let statusCode = response.response?.statusCode ?? 500
+            if statusCode == 200 || statusCode == 201 || statusCode == 202 || statusCode == 203 || statusCode == 204 {
+                return nil
+            }
+            guard let errPayload = response.value as? [String : Any],
+                let errMsg = errPayload["message"] else {
+                    return NSError(domain: "error",
+                                   code: 500,
+                                   userInfo: [NSLocalizedDescriptionKey:"未知错误"]) as Error
+            }
+            return NSError(domain: "error",
+                           code: statusCode,
+                           userInfo: [NSLocalizedDescriptionKey:errMsg]) as Error
+        }
+        return err
     }
 }
