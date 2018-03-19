@@ -19,7 +19,6 @@ final class DeferredHandle : NSObject{
         case productIdsTXT
         case productIdsCSV
         case influencersCSV
-        case updateInfluencersCSV
         static func validateURL(_ url : URL?) -> DeferredHandleType {
             guard let url = url else {
                 return .none
@@ -32,8 +31,6 @@ final class DeferredHandle : NSObject{
                 return .productHandlesCSV
             } else if url.lastPathComponent.hasPrefix("influencers") && url.lastPathComponent.hasSuffix("csv") {
                 return .influencersCSV
-            } else if url.lastPathComponent.hasPrefix("update_influencers") && url.lastPathComponent.hasSuffix("csv"){
-                return .updateInfluencersCSV
             }
             return .none
         }
@@ -105,63 +102,70 @@ final class DeferredHandle : NSObject{
             }
             let influencersJSON = Influencer.convertInfluencersJSON(list)
             if influencersJSON.count == 0 { return }
-            let operationQueue : OperationQueue = OperationQueue()
-            operationQueue.maxConcurrentOperationCount = 1
-            MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "上传中\n请等待...")
-            for json in influencersJSON {
-                let block = BlockOperation(block: {
-                    _ = RESTfulAPI.postInfluencer(json) { influencer, error in
-                        debugPrint(error)
-                        if influencer != nil {
-                            sleep(1)
-                        }
-                    }
-                })
-                operationQueue.addOperations([block], waitUntilFinished: true)
-            }
-            let block = BlockOperation(block: {
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
+            var influencers : [Influencer] = []
+            let decoder = JSONDecoder()
+            for influencerJSON in influencersJSON {
+                do  {
+                    let influencer = try decoder.decode(Influencer.self, from: JSONSerialization.data(withJSONObject: influencerJSON, options: []))
+                    influencers.append(influencer)
+                } catch {
+                    
                 }
-            })
-            operationQueue.addOperations([block], waitUntilFinished: true)
-        case .updateInfluencersCSV:
-            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
-                return
             }
-            let influencersJSON = Influencer.convertInfluencersJSON(list)
-            if influencersJSON.count == 0 { return }
-            let operationQueue : OperationQueue = OperationQueue()
-            operationQueue.maxConcurrentOperationCount = 1
-            MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "上传中\n请等待...")
-            for json in influencersJSON {
-                let block = BlockOperation(block: {
-                    guard let idStr = json[Influencer.InfluencerKeys.id.rawValue] as? String,
-                        let id = Int(idStr) else {
-                            return
-                    }
-                    _ = RESTfulAPI.putInfluencer(id, json) { influencer, error in
-                        debugPrint(error)
-                        if influencer != nil {
-                            sleep(1)
-                        }
-                    }
-                })
-                operationQueue.addOperations([block], waitUntilFinished: true)
-            }
-            let block = BlockOperation(block: {
-                DispatchQueue.main.async {
-                    MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
+            let controller = UIAlertController(title: "提示", message: "请选择上传/预览", preferredStyle: .alert)
+            let previewAction = UIAlertAction(title: "预览", style: .default, handler: { (action) in
+                guard let previewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing:PreviewInfluencerViewController.self)) as? PreviewInfluencerViewController else {
+                    return
                 }
+                previewController.influencers = influencers
+                ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(previewController, animated: true)
             })
-            operationQueue.addOperations([block], waitUntilFinished: true)
+            controller.addAction(previewAction)
+            let submitAction = UIAlertAction(title: "上传", style: .default, handler: { (action) in
+                DeferredHandle.submitInfluencerAction(influencersJSON)
+            })
+            controller.addAction(submitAction)
+            let cancelAction = UIAlertAction(title: "暂不", style: .cancel, handler: nil)
+            controller.addAction(cancelAction)
+            UIApplication.shared.keyWindow?.rootViewController?.present(controller, animated: true, completion: nil)
+            
         default:
             contentURL = nil
             return
         }
         self.contentURL = nil
     }
-    
+    static func submitInfluencerAction(_ influencersJSON : [[String : Any]]){
+        let operationQueue : OperationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+        MBProgressHUD.showAnimationView(UIApplication.shared.keyWindow?.rootViewController?.view, "同步中\n请等待...")
+        for json in influencersJSON {
+            let block = BlockOperation(block: {
+                guard let id = json[Influencer.InfluencerKeys.id.rawValue] as? Int else {
+                        _ = RESTfulAPI.postInfluencer(json) { influencer, error in
+                            debugPrint(error)
+                        }
+                        return
+                }
+                _ = RESTfulAPI.putInfluencer(id, json) { influencer, error in
+                    debugPrint(error)
+                }
+            })
+            operationQueue.addOperations([block], waitUntilFinished: true)
+        }
+        let block = BlockOperation(block: {
+            DispatchQueue.main.async {
+                MBProgressHUD.hide(UIApplication.shared.keyWindow?.rootViewController?.view)
+                let controller = UIAlertController(title: "提示", message: "上传同步已完毕。如有问题请联系技术开发", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "确定", style: .default, handler: { (action) in
+                    ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.popViewController(animated: true)
+                })
+                controller.addAction(okAction)
+                UIApplication.shared.keyWindow?.rootViewController?.present(controller, animated: true, completion: nil)
+            }
+        })
+        operationQueue.addOperations([block], waitUntilFinished: true)
+    }
     
     @objc func didBecomeActive(){
         action()

@@ -47,6 +47,9 @@
 		61C5B22F204C353D00B27DA4 /* Int64+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B22E204C353D00B27DA4 /* Int64+Addition.swift */; };
 		61C5B231204C354F00B27DA4 /* String+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B230204C354F00B27DA4 /* String+Addition.swift */; };
 		61C5B233204C37CB00B27DA4 /* Decimal+Addition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5B232204C37CB00B27DA4 /* Decimal+Addition.swift */; };
+		61E1FEAF205F59D00034D63B /* PreviewInfluencerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E1FEAE205F59D00034D63B /* PreviewInfluencerTableViewController.swift */; };
+		61E1FEB2205F5C610034D63B /* PreviewInfluencerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E1FEB1205F5C610034D63B /* PreviewInfluencerCell.swift */; };
+		61E1FEB4205F5E110034D63B /* PreviewInfluencerSocialCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E1FEB3205F5E110034D63B /* PreviewInfluencerSocialCell.swift */; };
 		61F5896A2050142E00A81BD8 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F589682050142E00A81BD8 /* SearchCell.swift */; };
 		61F5896B2050142E00A81BD8 /* SearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 61F589692050142E00A81BD8 /* SearchCell.xib */; };
 		CF9836A01B995BD0A4E75F1B /* Pods_Recommender.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED96738C56D93E6D7164FF /* Pods_Recommender.framework */; };
@@ -98,6 +101,9 @@
 		61C5B22E204C353D00B27DA4 /* Int64+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int64+Addition.swift"; sourceTree = "<group>"; };
 		61C5B230204C354F00B27DA4 /* String+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Addition.swift"; sourceTree = "<group>"; };
 		61C5B232204C37CB00B27DA4 /* Decimal+Addition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Addition.swift"; sourceTree = "<group>"; };
+		61E1FEAE205F59D00034D63B /* PreviewInfluencerTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewInfluencerTableViewController.swift; sourceTree = "<group>"; };
+		61E1FEB1205F5C610034D63B /* PreviewInfluencerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewInfluencerCell.swift; sourceTree = "<group>"; };
+		61E1FEB3205F5E110034D63B /* PreviewInfluencerSocialCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewInfluencerSocialCell.swift; sourceTree = "<group>"; };
 		61F589682050142E00A81BD8 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		61F589692050142E00A81BD8 /* SearchCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchCell.xib; sourceTree = "<group>"; };
 		9A3F6532BA1CA6436B7B1473 /* Pods-Recommender.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Recommender.release.xcconfig"; path = "Pods/Target Support Files/Pods-Recommender/Pods-Recommender.release.xcconfig"; sourceTree = "<group>"; };
@@ -283,6 +289,7 @@
 		61C5B20F204C1FCB00B27DA4 /* Recommender */ = {
 			isa = PBXGroup;
 			children = (
+				61E1FEAD205F59A40034D63B /* PreviewInfluencer */,
 				61A3D7B92057FD0C00DDB408 /* CHCSVParser */,
 				6135D13B205666B60051E21E /* Settings */,
 				6135D12F205662D20051E21E /* Influencer */,
@@ -352,6 +359,24 @@
 				6192B384204F9212009BC242 /* CartViewController.swift */,
 			);
 			path = RepoProductEdge;
+			sourceTree = "<group>";
+		};
+		61E1FEAD205F59A40034D63B /* PreviewInfluencer */ = {
+			isa = PBXGroup;
+			children = (
+				61E1FEB0205F5C420034D63B /* View */,
+				61E1FEAE205F59D00034D63B /* PreviewInfluencerTableViewController.swift */,
+			);
+			path = PreviewInfluencer;
+			sourceTree = "<group>";
+		};
+		61E1FEB0205F5C420034D63B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				61E1FEB1205F5C610034D63B /* PreviewInfluencerCell.swift */,
+				61E1FEB3205F5E110034D63B /* PreviewInfluencerSocialCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		61F58965205013E800A81BD8 /* View */ = {
@@ -510,6 +535,7 @@
 				61A3D7B82057D1AE00DDB408 /* InfluencerJSONEditorViewController.swift in Sources */,
 				6135D1502057716F0051E21E /* InfluencerSocialTableViewCell.swift in Sources */,
 				6192B388204F93E0009BC242 /* CartItemCell.swift in Sources */,
+				61E1FEB4205F5E110034D63B /* PreviewInfluencerSocialCell.swift in Sources */,
 				6135D140205667FA0051E21E /* SettingsCell.swift in Sources */,
 				61C5B22F204C353D00B27DA4 /* Int64+Addition.swift in Sources */,
 				61F5896A2050142E00A81BD8 /* SearchCell.swift in Sources */,
@@ -527,8 +553,10 @@
 				6135D143205668340051E21E /* SettingsBean.swift in Sources */,
 				6192B394204FC826009BC242 /* RecommenderViewController.swift in Sources */,
 				61A3D7C12058B77200DDB408 /* InfluencerHeaderView.swift in Sources */,
+				61E1FEB2205F5C610034D63B /* PreviewInfluencerCell.swift in Sources */,
 				6135D1362056634A0051E21E /* Influencer.swift in Sources */,
 				6135D14E205770840051E21E /* InfluencerInfoCell.swift in Sources */,
+				61E1FEAF205F59D00034D63B /* PreviewInfluencerTableViewController.swift in Sources */,
 				6192B39A204FFE45009BC242 /* SearchViewController.swift in Sources */,
 				6192B391204FBF0D009BC242 /* RecommenderProduct.swift in Sources */,
 				61A3D7BE2057FD0D00DDB408 /* CHCSVParser.m in Sources */,

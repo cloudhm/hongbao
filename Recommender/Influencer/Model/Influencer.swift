@@ -109,7 +109,7 @@ final class Influencer : Decodable, Encodable {
                     influencersJSON.removeLast()
                 } else {
                     if indexOfID != nil {
-                        influencerJSON[InfluencerKeys.id.rawValue] = line[indexOfID!]
+                        influencerJSON[InfluencerKeys.id.rawValue] = Int(line[indexOfID!])
                     }
                     influencerJSON[InfluencerKeys.name.rawValue] = line[indexOfName!]
                     influencerJSON[InfluencerKeys.image.rawValue] = line[indexOfImage!]
@@ -119,8 +119,11 @@ final class Influencer : Decodable, Encodable {
                     influencerJSON[InfluencerKeys.tags.rawValue] = line[indexOfTags!]
                 }
                 var social_JSON = socialJSON(line, indexOfSocialsHandle, indexOfSocialsID)
+                if influencerJSON[InfluencerKeys.id.rawValue] == nil {
+                    social_JSON?[InfluencerSocial.InfluencerSocialKeys.id.rawValue] = nil
+                }
                 if social_JSON != nil {
-                    if indexOfSocialsArchived != nil {
+                    if indexOfSocialsArchived != nil && influencerJSON[InfluencerKeys.id.rawValue] != nil {
                         social_JSON?[InfluencerSocial.InfluencerSocialKeys.archived.rawValue] = line[indexOfSocialsArchived!].range(of: "true", options: .caseInsensitive)?.isEmpty ?? true ? false : true
                     }
                     influencerSocialsJSON?.append(social_JSON!)
@@ -137,7 +140,7 @@ final class Influencer : Decodable, Encodable {
      * convert influencer instances to csv file
      */
     static func convertToCSV(_ influencers : [Influencer]) -> String? {
-        let exportFilePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/update_influencers.csv"
+        let exportFilePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/influencers.csv"
         let output : OutputStream = OutputStream(toMemory: ())
         let writer : CHCSVWriter = CHCSVWriter(outputStream: output, encoding: String.Encoding.utf8.rawValue, delimiter: ("," as NSString).character(at: 0))
         // fileds: handle, image, name, id, socials_handle, socials_id, socials_archived

@@ -61,10 +61,10 @@ final class SettingsBean : Decodable, Encodable {
         let exist = FileManager.default.fileExists(atPath: documentPath().path)
         if !exist {
             let dicts : [[String: String]] = [["title":"网红",
-                                               "host":"test.whatsmode.com/formula-1.0-storefront",
+                                               "host":"test.whatsmode.com/formula-1.1-storefront",
                                                "port":""],
                                               ["title":"商品",
-                                               "host":"test.whatsmode.com/formula-1.0-storefront",
+                                               "host":"test.whatsmode.com/formula-1.1-storefront",
                                                "port":""]]
             (dicts as NSArray).write(to: documentPath(), atomically: true)
         }
