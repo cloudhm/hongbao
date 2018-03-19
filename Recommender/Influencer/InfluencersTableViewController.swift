@@ -20,7 +20,7 @@ class InfluencersTableViewController: UITableViewController {
     }
     var loading : Bool = false
     var currentPage : Int = 0
-    let size : Int = 10
+    let size : Int = 50
     var last : Bool = false
     private var documentInteractionController : UIDocumentInteractionController?
     override func viewDidLoad() {
@@ -60,7 +60,7 @@ class InfluencersTableViewController: UITableViewController {
         if influencers.count < size {
             return
         }
-        if (influencers.count - indexPath.row) < size {
+        if (influencers.count - indexPath.row) < (size/2) {
             loadData(false)
         }
     }

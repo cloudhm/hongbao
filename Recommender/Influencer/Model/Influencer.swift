@@ -116,7 +116,10 @@ final class Influencer : Decodable, Encodable {
                     influencerJSON[InfluencerKeys.handle.rawValue] = line[indexOfHandle!]
                 }
                 if indexOfTags != nil {
-                    influencerJSON[InfluencerKeys.tags.rawValue] = line[indexOfTags!]
+                    let tags = line[indexOfTags!]
+                    if tags.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                        influencerJSON[InfluencerKeys.tags.rawValue] = line[indexOfTags!]
+                    }
                 }
                 var social_JSON = socialJSON(line, indexOfSocialsHandle, indexOfSocialsID)
                 if influencerJSON[InfluencerKeys.id.rawValue] == nil {
@@ -143,10 +146,11 @@ final class Influencer : Decodable, Encodable {
         let exportFilePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/influencers.csv"
         let output : OutputStream = OutputStream(toMemory: ())
         let writer : CHCSVWriter = CHCSVWriter(outputStream: output, encoding: String.Encoding.utf8.rawValue, delimiter: ("," as NSString).character(at: 0))
-        // fileds: handle, image, name, id, socials_handle, socials_id, socials_archived
+        // fileds: handle, image, name, tags, id, socials_handle, socials_id, socials_archived
         writer.writeField(Influencer.InfluencerKeys.handle.rawValue)
         writer.writeField(Influencer.InfluencerKeys.image.rawValue)
         writer.writeField(Influencer.InfluencerKeys.name.rawValue)
+        writer.writeField(Influencer.InfluencerKeys.tags.rawValue)
         writer.writeField(Influencer.InfluencerKeys.id.rawValue)
         writer.writeField("socials_handle")
         writer.writeField("socials_id")
@@ -156,12 +160,14 @@ final class Influencer : Decodable, Encodable {
             writer.writeField(influencer.handle)
             writer.writeField(influencer.image)
             writer.writeField(influencer.name)
+            writer.writeField(influencer.tags)
             writer.writeField(influencer.id)
             if influencer.socials?.isEmpty ?? true {
                 writer.finishLine()
             } else {
                 for (index, influencerSocial) in influencer.socials!.enumerated() {
                     if index > 0 {
+                        writer.writeField(nil)
                         writer.writeField(nil)
                         writer.writeField(nil)
                         writer.writeField(nil)
