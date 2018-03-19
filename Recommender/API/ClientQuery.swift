@@ -36,16 +36,19 @@ final class ClientQuery {
  * RootQuery
  */
 extension ClientQuery {
-    static func queryProductList(_ cursor : String?)->Storefront.QueryRootQuery {
+    static func queryProducts(_ queryStr : String,_ cursor : String?) -> Storefront.QueryRootQuery {
         return Storefront.buildQuery{ $0
-            .shop{ $0
-                .products(first:250, after : cursor, reverse:true){ $0
+            .shop{$0
+                .products(first : 20,after : cursor, reverse: true, query : queryStr) {$0
+                    .pageInfo{$0
+                        .hasNextPage()
+                    }
                     .edges{$0
-                        .cursor()
                         .node{$0
                             .id()
                             .title()
-                            .images(first:1){$0
+                            .onlineStoreUrl()
+                            .images(first:1, maxWidth:85, scale:2){$0
                                 .edges{$0
                                     .node{$0
                                         .src()
@@ -64,39 +67,6 @@ extension ClientQuery {
                                         .compareAtPrice()
                                     }
                                 }
-                            }
-                        }
-                    }
-                    .pageInfo{$0
-                        .hasNextPage()
-                    }
-                }
-            }
-        }
-    }
-    static func queryProductListByIds(_ ids : [GraphQL.ID])-> Storefront.QueryRootQuery {
-        return Storefront.buildQuery{ $0
-            .nodes(ids: ids){ $0
-                .onProduct{$0
-                    .id()
-                    .title()
-                    .images(first:1){$0
-                        .edges{$0
-                            .node{$0
-                                .src()
-                            }
-                        }
-                    }
-                    .options(first:3){$0
-                        .name()
-                        .values()
-                    }
-                    .handle()
-                    .variants(first:1){$0
-                        .edges{$0
-                            .node{$0
-                                .price()
-                                .compareAtPrice()
                             }
                         }
                     }

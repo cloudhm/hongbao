@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import SDWebImage
 class InfluencerCell: UITableViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
     @IBOutlet weak var avatarImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!

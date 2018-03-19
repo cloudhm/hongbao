@@ -16,18 +16,12 @@ final class DeferredHandle : NSObject{
     enum DeferredHandleType {
         case none
         case productHandlesCSV
-        case productIdsTXT
-        case productIdsCSV
         case influencersCSV
         static func validateURL(_ url : URL?) -> DeferredHandleType {
             guard let url = url else {
                 return .none
             }
-            if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("txt") {
-                return .productIdsTXT
-            } else if url.lastPathComponent.hasPrefix("ids") && url.lastPathComponent.hasSuffix("csv") {
-                return .productIdsCSV
-            } else if url.lastPathComponent.hasPrefix("products_export") && url.lastPathComponent.hasSuffix("csv") {
+            if url.lastPathComponent.hasPrefix("products_export") && url.lastPathComponent.hasSuffix("csv") {
                 return .productHandlesCSV
             } else if url.lastPathComponent.hasPrefix("influencers") && url.lastPathComponent.hasSuffix("csv") {
                 return .influencersCSV
@@ -42,13 +36,6 @@ final class DeferredHandle : NSObject{
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
     func action(){
-        // string --> ids joint by comma
-        func convertIDs(_ text : String,_ symbol : Character) -> String {
-            let result = ((text.split(separator: symbol).map{
-                GraphQL.ID(rawValue: String($0).getIntNumber()?.encodingProductID())
-                } as [GraphQL.ID?]).flatMap{$0}.map{$0.rawValue.decodingGraphID()} as [Int64?]).flatMap{$0}.map{"\($0)"}
-            return Set(result).joined(separator: ",")
-        }
         let type = DeferredHandleType.validateURL(contentURL)
         switch type {
         case .productHandlesCSV:
@@ -65,37 +52,6 @@ final class DeferredHandle : NSObject{
                 }
             }
             uploadHandles(elements.sorted().map{ URL(string: $0)?.lastPathComponent ?? $0}.map{$0.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!})
-            break
-        case .productIdsTXT:
-            do  {
-                let text = try NSString(contentsOf: contentURL!, encoding: String.Encoding.utf8.rawValue)
-                guard let controller : SearchViewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing: SearchViewController.self)) as? SearchViewController else {
-                        return
-                }
-                controller.preText = convertIDs(text as String,",")
-                ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
-            } catch {
-            }
-            break
-        case .productIdsCSV:
-            guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
-                return
-            }
-            var elements : Set<String> = []
-            for (index,element) in list.enumerated() {
-                if index > 0 {
-                    guard let firstElement = element.first else {
-                        continue
-                    }
-                    elements.insert(firstElement)
-                }
-            }
-            let text = elements.joined(separator: ",")
-            guard let controller : SearchViewController = UIApplication.shared.keyWindow?.rootViewController?.storyboard?.instantiateViewController(withIdentifier: String(describing: SearchViewController.self)) as? SearchViewController else {
-                return
-            }
-            controller.preText = convertIDs(text,",")
-            ((UIApplication.shared.keyWindow?.rootViewController as? UITabBarController)?.selectedViewController as? UINavigationController)?.pushViewController(controller, animated: true)
         case .influencersCSV:
             guard let list = NSArray(contentsOfCSVURL:contentURL) as? [[String]] else {
                 return
@@ -128,7 +84,6 @@ final class DeferredHandle : NSObject{
             let cancelAction = UIAlertAction(title: "暂不", style: .cancel, handler: nil)
             controller.addAction(cancelAction)
             UIApplication.shared.keyWindow?.rootViewController?.present(controller, animated: true, completion: nil)
-            
         default:
             contentURL = nil
             return

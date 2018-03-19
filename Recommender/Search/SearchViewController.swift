@@ -15,7 +15,14 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var preText : String?
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    var products : [Storefront.Product]?
+    var productEdges : [Storefront.ProductEdge] = []
+    var pageInfo : Storefront.PageInfo?
+    var task : Task? {
+        didSet {
+            oldValue?.cancel()
+        }
+    }
+    var loading : Bool = false
     // MARK: initialization
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,16 +47,27 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     // MARK: UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return products?.count ?? 0
+        return productEdges.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell : SearchCell = tableView.dequeueReusableCell(withIdentifier: String(describing: SearchCell.self)) as! SearchCell
-        cell.product = products?[indexPath.row]
+        cell.product = productEdges[indexPath.row].node
         return cell
+    }
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if loading == false {
+            return
+        }
+        if !(pageInfo?.hasNextPage ?? false) {
+            return
+        }
+        if (productEdges.count - indexPath.row) < 10 {
+            search(searchBar.text?.trimmingCharacters(in: .whitespaces))
+        }
     }
     // MARK: UITableVIewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let safari = SFSafariViewController(url: URL(string: "https://whatsmode.com/products/"+(products?[indexPath.row].handle ?? ""))!)
+        let safari = SFSafariViewController(url: productEdges[indexPath.row].node.onlineStoreUrl!)
         navigationController?.present(safari, animated: true, completion: nil)
     }
     // MARK: UISearchBarDelegate
@@ -60,22 +78,42 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         if text.count == 0 {
             return
         }
-        let ids : [GraphQL.ID] = (text.split(separator: ",").map{
-            GraphQL.ID(rawValue: String($0).getIntNumber()?.encodingProductID())
-        } as [GraphQL.ID?]).flatMap{$0}
-        if ids.count > 0 {
-            MBProgressHUD.showAnimationView(self.navigationController?.view)
-            _ = Client.shared.queryProductsByIDs(ids) { [weak self] (products, errMsg) in
-                MBProgressHUD.hide(self?.navigationController?.view)
-                if errMsg != nil {
-                    let controller = UIAlertController(title: "错误", message: errMsg, preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
-                    controller.addAction(okAction)
-                    self?.navigationController?.present(controller, animated: true, completion: nil)
-                } else {
-                    self?.products = products
-                    self?.tableView.reloadData()
+        productEdges.removeAll()
+        pageInfo = nil
+        tableView.reloadData()
+        loading = false
+        task = nil
+        search(text)
+    }
+    private func search(_ text : String?){
+        guard let text = text else { return }
+        if text.count == 0 { return }
+        if loading {
+            return
+        }
+        loading = true
+        MBProgressHUD.showAnimationView(self.navigationController?.view)
+        _ = Client.shared.queryProducts(text, productEdges.last?.cursor) { [weak self] (productsConnection, errMsg) in
+            MBProgressHUD.hide(self?.navigationController?.view)
+            if errMsg != nil {
+                self?.loading = false
+                let controller = UIAlertController(title: "错误", message: errMsg, preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)
+                controller.addAction(okAction)
+                self?.navigationController?.present(controller, animated: true, completion: nil)
+            } else {
+                guard let productsConnection = productsConnection else {
+                    self?.loading = false
+                    return
                 }
+                if self?.pageInfo == nil {
+                    self?.productEdges = productsConnection.edges
+                } else {
+                    self?.productEdges += productsConnection.edges
+                }
+                self?.pageInfo = productsConnection.pageInfo
+                self?.tableView.reloadData()
+                self?.loading = false
             }
         }
     }
@@ -83,10 +121,9 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
         performSegue(withIdentifier: "searchToCart", sender: nil)
     }
     @objc func addAll(){
-        guard let products = products else { return }
-        if products.count > 0 {
-            for product in products {
-                CartController.shared.addToCart(product)
+        if productEdges.count > 0 {
+            for productEdge in productEdges {
+                CartController.shared.addToCart(productEdge.node)
             }
             let controller = UIAlertController(title: "提示", message: "所有商品已加入仓库", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "确定", style: .default, handler: nil)

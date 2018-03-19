@@ -21,7 +21,7 @@ class RecommenderCell: UITableViewCell {
         willSet {
             guard let newProduct = newValue else { return }
             productIdLabel.text = "\(newProduct.id)"
-            productImageView.sd_setImage(with: newProduct.image, placeholderImage: nil, options: .retryFailed, completed: nil)
+            productImageView.sd_setImage(with: newProduct.image?.cropShopifyImage(85,112), placeholderImage: nil, options: .retryFailed, completed: nil)
             productTitleLabel.text = newProduct.title
             productPriceLabel.text = newProduct.min_price?.formatPrice()
             topSwitch.isOn = newProduct.top ?? false

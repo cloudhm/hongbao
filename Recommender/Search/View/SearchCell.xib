@@ -57,8 +57,8 @@
                             <constraint firstAttribute="width" constant="40" id="pZN-H2-OKy"/>
                             <constraint firstAttribute="height" constant="40" id="vzG-6F-9sb"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="27"/>
-                        <state key="normal" title="+">
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="添加">
                             <color key="titleColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         </state>
                         <connections>

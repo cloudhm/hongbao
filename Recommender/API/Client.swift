@@ -47,22 +47,12 @@ final class Client {
  * query root
  */
 extension Client {
-    func queryProductListBy(_ cursor : String?,_ refresh : Bool, _ completion : @escaping(Storefront.ProductConnection?, String?)->Void) -> Task {
-        let query = ClientQuery.queryProductList(cursor)
-        let task = self.client.queryGraphWith(query, cachePolicy: refresh ? .cacheFirst(expireIn: 60) : .cacheFirst(expireIn: 3600), retryHandler: nil) { response, error in
+    func queryProducts(_ queryStr : String,
+                       _ cursor : String?,
+                       _ completion : @escaping(Storefront.ProductConnection?, String?)->Void) -> Task {
+        let query = ClientQuery.queryProducts(queryStr, cursor)
+        let task = self.client.queryGraphWith(query) { response, error in
             completion(response?.shop.products, error?.message())
-        }
-        task.resume()
-        return task
-    }
-    func queryProductsByIDs(_ ids : [GraphQL.ID], _ completion : @escaping([Storefront.Product]?, String?)->Void) -> Task {
-        let query = ClientQuery.queryProductListByIds(ids)
-        let task = self.client.queryGraphWith(query, cachePolicy: .cacheFirst(expireIn: 3600), retryHandler: nil) { response, error in
-            guard let products = response?.nodes as? [Storefront.Product?] else {
-                completion(nil, error?.message())
-                return
-            }
-            completion(products.flatMap{$0},  error?.message())
         }
         task.resume()
         return task
