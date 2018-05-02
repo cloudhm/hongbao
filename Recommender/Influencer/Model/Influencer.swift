@@ -15,6 +15,7 @@ final class Influencer : Decodable, Encodable {
     var socials : [InfluencerSocial]?
     var id : Int?
     var tags : String?
+    var bodyHtml : String?
     enum InfluencerKeys : String, CodingKey {
         case name
         case image
@@ -22,6 +23,7 @@ final class Influencer : Decodable, Encodable {
         case socials
         case id
         case tags
+        case bodyHtml
     }
     // Decodeable
     init(from decoder: Decoder) throws {
@@ -32,6 +34,7 @@ final class Influencer : Decodable, Encodable {
         socials = try values.decodeIfPresent(Array.self, forKey: .socials)
         id = try values.decodeIfPresent(Int.self, forKey: .id)
         tags = try values.decodeIfPresent(String.self, forKey: .tags)
+        bodyHtml = try values.decodeIfPresent(String.self, forKey: .bodyHtml)
     }
     // Encodable
     public func encode(to encoder: Encoder) throws {
@@ -42,6 +45,7 @@ final class Influencer : Decodable, Encodable {
         try container.encodeIfPresent(socials, forKey: .socials)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encodeIfPresent(tags, forKey: .tags)
+        try container.encodeIfPresent(bodyHtml, forKey: .bodyHtml)
     }
     /**
      * convert influencers JSON
@@ -77,6 +81,7 @@ final class Influencer : Decodable, Encodable {
         var indexOfSocialsID : Int?
         var indexOfTags : Int?
         var indexOfSocialsArchived : Int?
+        var indexOfBodyHtml : Int?
         for (index, field) in fields.enumerated() {
             if !(field.range(of: InfluencerKeys.name.rawValue, options: .caseInsensitive)?.isEmpty ?? true) {
                 indexOfName = index
@@ -94,6 +99,8 @@ final class Influencer : Decodable, Encodable {
                 indexOfID = index
             } else if !(field.range(of: "SOCIALS_ARCHIVED", options: .caseInsensitive)?.isEmpty ?? true) {
                 indexOfSocialsArchived = index
+            } else if !(field.range(of: InfluencerKeys.bodyHtml.rawValue, options: .caseInsensitive)?.isEmpty ?? true) {
+                indexOfBodyHtml = index
             }
         }
         if indexOfName == nil || indexOfImage == nil || indexOfHandle == nil {
@@ -121,6 +128,9 @@ final class Influencer : Decodable, Encodable {
                         influencerJSON[InfluencerKeys.tags.rawValue] = line[indexOfTags!]
                     }
                 }
+                if indexOfBodyHtml != nil {
+                    influencerJSON[InfluencerKeys.bodyHtml.rawValue] = line[indexOfBodyHtml!]
+                }
                 var social_JSON = socialJSON(line, indexOfSocialsHandle, indexOfSocialsID)
                 if influencerJSON[InfluencerKeys.id.rawValue] == nil {
                     social_JSON?[InfluencerSocial.InfluencerSocialKeys.id.rawValue] = nil
@@ -146,12 +156,13 @@ final class Influencer : Decodable, Encodable {
         let exportFilePath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first! + "/influencers.csv"
         let output : OutputStream = OutputStream(toMemory: ())
         let writer : CHCSVWriter = CHCSVWriter(outputStream: output, encoding: String.Encoding.utf8.rawValue, delimiter: ("," as NSString).character(at: 0))
-        // fileds: handle, image, name, tags, id, socials_handle, socials_id, socials_archived
+        // fileds: handle, image, name, bodyHtml tags, id, socials_handle, socials_id, socials_archived
         writer.writeField(Influencer.InfluencerKeys.handle.rawValue)
         writer.writeField(Influencer.InfluencerKeys.image.rawValue)
         writer.writeField(Influencer.InfluencerKeys.name.rawValue)
         writer.writeField(Influencer.InfluencerKeys.tags.rawValue)
         writer.writeField(Influencer.InfluencerKeys.id.rawValue)
+        writer.writeField(Influencer.InfluencerKeys.bodyHtml.rawValue)
         writer.writeField("socials_handle")
         writer.writeField("socials_id")
         writer.writeField("socials_archived")
@@ -162,6 +173,7 @@ final class Influencer : Decodable, Encodable {
             writer.writeField(influencer.name)
             writer.writeField(influencer.tags)
             writer.writeField(influencer.id)
+            writer.writeField(influencer.bodyHtml)
             if influencer.socials?.isEmpty ?? true {
                 writer.finishLine()
             } else {
