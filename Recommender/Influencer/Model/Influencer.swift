@@ -184,6 +184,7 @@ final class Influencer : Decodable, Encodable {
                         writer.writeField(nil)
                         writer.writeField(nil)
                         writer.writeField(nil)
+                        writer.writeField(nil)
                     }
                     writer.writeField(influencerSocial.handle)
                     writer.writeField(influencerSocial.id)
