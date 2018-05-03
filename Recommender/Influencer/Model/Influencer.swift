@@ -103,7 +103,7 @@ final class Influencer : Decodable, Encodable {
                 indexOfBodyHtml = index
             }
         }
-        if indexOfName == nil || indexOfImage == nil || indexOfHandle == nil {
+        if indexOfName == nil || indexOfImage == nil || indexOfHandle == nil ||  indexOfBodyHtml == nil {
             return []
         }
         for (index, line) in list.enumerated() {
@@ -121,15 +121,13 @@ final class Influencer : Decodable, Encodable {
                     influencerJSON[InfluencerKeys.name.rawValue] = line[indexOfName!]
                     influencerJSON[InfluencerKeys.image.rawValue] = line[indexOfImage!]
                     influencerJSON[InfluencerKeys.handle.rawValue] = line[indexOfHandle!]
+                    influencerJSON[InfluencerKeys.bodyHtml.rawValue] = line[indexOfBodyHtml!]
                 }
                 if indexOfTags != nil {
                     let tags = line[indexOfTags!]
                     if tags.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
                         influencerJSON[InfluencerKeys.tags.rawValue] = line[indexOfTags!]
                     }
-                }
-                if indexOfBodyHtml != nil {
-                    influencerJSON[InfluencerKeys.bodyHtml.rawValue] = line[indexOfBodyHtml!]
                 }
                 var social_JSON = socialJSON(line, indexOfSocialsHandle, indexOfSocialsID)
                 if influencerJSON[InfluencerKeys.id.rawValue] == nil {
